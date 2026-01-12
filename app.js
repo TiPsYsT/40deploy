@@ -1,7 +1,7 @@
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const SCALE = 15; // px per inch (60x44 board)
+const SCALE = 15; // px per inch
 let models = [];
 let selected = [];
 let dragging = false;
@@ -13,73 +13,53 @@ let lastPos = null;
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Board outline (60x44")
+  // Board 60x44"
   ctx.strokeStyle = "#000";
   ctx.lineWidth = 2;
   ctx.strokeRect(0, 0, 60 * SCALE, 44 * SCALE);
 
-  // Draw models
   models.forEach(m => {
     ctx.beginPath();
-
     if (m.shape === "oval") {
-      ctx.ellipse(
-        m.x,
-        m.y,
-        m.w / 2,
-        m.h / 2,
-        0,
-        0,
-        Math.PI * 2
-      );
+      ctx.ellipse(m.x, m.y, m.w / 2, m.h / 2, 0, 0, Math.PI * 2);
     } else {
       ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
     }
-
     ctx.fillStyle = selected.includes(m) ? "red" : "black";
     ctx.fill();
   });
 
   requestAnimationFrame(draw);
 }
-
 draw();
 
 /* =========================
-   MOUSE INTERACTION
+   MOUSE
 ========================= */
 canvas.onmousedown = e => {
   const mx = e.offsetX;
   const my = e.offsetY;
 
-  selected = models.filter(m => {
-    if (m.shape === "oval") {
-      return (
-        Math.abs(mx - m.x) <= m.w / 2 &&
-        Math.abs(my - m.y) <= m.h / 2
-      );
-    } else {
-      return Math.hypot(mx - m.x, my - m.y) <= m.r;
-    }
-  });
+  selected = models.filter(m =>
+    m.shape === "oval"
+      ? Math.abs(mx - m.x) <= m.w / 2 && Math.abs(my - m.y) <= m.h / 2
+      : Math.hypot(mx - m.x, my - m.y) <= m.r
+  );
 
-  if (selected.length > 0) {
+  if (selected.length) {
     dragging = true;
     lastPos = { x: mx, y: my };
   }
 };
 
 canvas.onmousemove = e => {
-  if (!dragging || !lastPos) return;
-
+  if (!dragging) return;
   const dx = e.offsetX - lastPos.x;
   const dy = e.offsetY - lastPos.y;
-
   selected.forEach(m => {
     m.x += dx;
     m.y += dy;
   });
-
   lastPos = { x: e.offsetX, y: e.offsetY };
 };
 
@@ -89,7 +69,7 @@ canvas.onmouseup = () => {
 };
 
 /* =========================
-   NEW RECRUIT IMPORT (ROBUST)
+   NEW RECRUIT IMPORT (CORRECT)
 ========================= */
 document.getElementById("import").addEventListener("change", e => {
   const file = e.target.files[0];
@@ -97,14 +77,13 @@ document.getElementById("import").addEventListener("change", e => {
 
   const reader = new FileReader();
   reader.onload = () => {
-    const data = JSON.parse(reader.result);
     models = [];
-    importForces(data);
+    parseRoster(JSON.parse(reader.result));
   };
   reader.readAsText(file);
 });
 
-function importForces(data) {
+function parseRoster(data) {
   if (!data.roster || !data.roster.forces) {
     alert("Fel fil – exportera JSON från New Recruit");
     return;
@@ -122,13 +101,13 @@ function importForces(data) {
 }
 
 function parseSelection(sel, x, y) {
-  // Kolla model profiles
+  // Look for model profiles (THIS IS THE KEY)
   if (sel.profiles) {
     sel.profiles.forEach(p => {
       if (p.type === "Model" && p.characteristics?.Base) {
         const base = parseBase(p.characteristics.Base);
-
         const count = sel.number || 1;
+
         for (let i = 0; i < count; i++) {
           models.push({
             shape: base.shape,
@@ -153,25 +132,18 @@ function parseSelection(sel, x, y) {
 
   return y;
 }
+
 /* =========================
    BASE PARSER
 ========================= */
 function parseBase(baseString) {
-  // Examples: "25mm", "32mm", "60x35mm"
-  const scale = 0.06 * SCALE;
+  const scale = 0.06 * SCALE; // mm → px
 
   if (baseString.includes("x")) {
     const [w, h] = baseString.replace("mm", "").split("x").map(Number);
-    return {
-      shape: "oval",
-      w: w * scale,
-      h: h * scale
-    };
+    return { shape: "oval", w: w * scale, h: h * scale };
   } else {
     const d = Number(baseString.replace("mm", ""));
-    return {
-      shape: "circle",
-      r: (d / 2) * scale
-    };
+    return { shape: "circle", r: (d / 2) * scale };
   }
 }
