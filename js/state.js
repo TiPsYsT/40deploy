@@ -1,5 +1,5 @@
+// 2.1 global state
 export const state = {
-  armyUnits: [],   // definitions (vänster)
-  models: []       // instanser (brädet)
+  armyUnits: [],   // units i sidebar (definitions)
+  models: []       // modeller på brädet (instances)
 };
-
