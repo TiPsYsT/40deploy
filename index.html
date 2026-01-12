@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>40K Deployment Trainer</title>
   <style>
-    body { margin:0; display:flex; font-family:Arial }
-    #sidebar { width:280px; background:#222; color:white; padding:10px }
-    canvas { background:#eee }
-    button { width:100%; margin:4px 0; padding:6px }
+    body { margin:0; display:flex; font-family:Arial; height:100vh }
+    #sidebar {
+      width:260px;
+      background:#222;
+      color:white;
+      padding:10px;
+      box-sizing:border-box;
+      overflow-y:auto;
+    }
+    #sidebar h3 { margin-top:0 }
+    #sidebar button {
+      width:100%;
+      margin:4px 0;
+      padding:6px;
+      cursor:pointer;
+    }
+    canvas { background:#eee; flex:1 }
   </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <h3>Units</h3>
-  <hr>
+  <h3>Army</h3>
   <input type="file" id="import" />
+  <hr>
+  <div id="units"></div>
 </div>
 
-<canvas id="board" width="900" height="660"></canvas>
+<canvas id="board" width="1200" height="880"></canvas>
 
-<script src="app.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
-
