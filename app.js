@@ -1,13 +1,7 @@
-reader.onload = () => {
-  console.log("JSON loaded");
-  models = [];
-  parseRoster(JSON.parse(reader.result));
-};
-
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const SCALE = 15; // px per inch
+const SCALE = 15; // px per inch (60x44)
 let models = [];
 let selected = [];
 let dragging = false;
@@ -19,7 +13,7 @@ let lastPos = null;
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Board 60x44"
+  // Board outline 60x44"
   ctx.strokeStyle = "#000";
   ctx.lineWidth = 2;
   ctx.strokeRect(0, 0, 60 * SCALE, 44 * SCALE);
@@ -62,10 +56,12 @@ canvas.onmousemove = e => {
   if (!dragging) return;
   const dx = e.offsetX - lastPos.x;
   const dy = e.offsetY - lastPos.y;
+
   selected.forEach(m => {
     m.x += dx;
     m.y += dy;
   });
+
   lastPos = { x: e.offsetX, y: e.offsetY };
 };
 
@@ -75,7 +71,7 @@ canvas.onmouseup = () => {
 };
 
 /* =========================
-   NEW RECRUIT IMPORT (CORRECT)
+   NEW RECRUIT IMPORT
 ========================= */
 document.getElementById("import").addEventListener("change", e => {
   const file = e.target.files[0];
@@ -90,7 +86,8 @@ document.getElementById("import").addEventListener("change", e => {
 });
 
 function parseRoster(data) {
-  if (!data.roster || !data.roster.forces) {
+  const forces = data.roster?.forces || data.forces;
+  if (!forces) {
     alert("Fel fil – exportera JSON från New Recruit");
     return;
   }
@@ -98,8 +95,8 @@ function parseRoster(data) {
   let x = 120;
   let y = 120;
 
-  data.roster.forces.forEach(force => {
-    force.selections.forEach(sel => {
+  forces.forEach(force => {
+    force.selections?.forEach(sel => {
       y = parseSelection(sel, x, y);
       y += 40;
     });
@@ -107,11 +104,15 @@ function parseRoster(data) {
 }
 
 function parseSelection(sel, x, y) {
-  // Look for model profiles (THIS IS THE KEY)
+  // Find model profiles (THIS is where base size lives)
   if (sel.profiles) {
     sel.profiles.forEach(p => {
-      if (p.type === "Model" && p.characteristics?.Base) {
-        const base = parseBase(p.characteristics.Base);
+      const baseString =
+        p.characteristics?.Base ||
+        p.characteristics?.["Base Size"];
+
+      if (p.type === "Model" && baseString) {
+        const base = parseBase(baseString);
         const count = sel.number || 1;
 
         for (let i = 0; i < count; i++) {
@@ -130,11 +131,9 @@ function parseSelection(sel, x, y) {
   }
 
   // Recurse children
-  if (sel.selections) {
-    sel.selections.forEach(child => {
-      y = parseSelection(child, x, y);
-    });
-  }
+  sel.selections?.forEach(child => {
+    y = parseSelection(child, x, y);
+  });
 
   return y;
 }
@@ -146,7 +145,10 @@ function parseBase(baseString) {
   const scale = 0.06 * SCALE; // mm → px
 
   if (baseString.includes("x")) {
-    const [w, h] = baseString.replace("mm", "").split("x").map(Number);
+    const [w, h] = baseString
+      .replace("mm", "")
+      .split("x")
+      .map(Number);
     return { shape: "oval", w: w * scale, h: h * scale };
   } else {
     const d = Number(baseString.replace("mm", ""));
