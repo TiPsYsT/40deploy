@@ -1,33 +1,39 @@
 import { state } from "./state.js";
 import { renderSidebar } from "./sidebar.js";
 
+// 3.1 setup
 export function setupImporter() {
-  document.getElementById("import").addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      parseNewRecruit(JSON.parse(reader.result));
-      renderSidebar();
-    };
-    reader.readAsText(file);
-  });
+  document.getElementById("import").addEventListener("change", onFile);
 }
 
+// 3.2 file handler
+function onFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    parseNewRecruit(JSON.parse(reader.result));
+    renderSidebar();
+  };
+  reader.readAsText(file);
+}
+
+// 3.3 parse root
 function parseNewRecruit(data) {
   state.armyUnits = [];
 
-  if (!data.roster?.forces) {
-    alert("Fel fil (New Recruit JSON)");
+  if (!data?.roster?.forces) {
+    alert("Fel fil – exportera JSON från New Recruit");
     return;
   }
 
   data.roster.forces.forEach(force => {
-    force.selections.forEach(sel => walkSelection(sel));
+    force.selections.forEach(walkSelection);
   });
 }
 
+// 3.4 recursive walk
 function walkSelection(sel) {
   if (sel.profiles) {
     sel.profiles.forEach(p => {
@@ -46,15 +52,15 @@ function walkSelection(sel) {
   }
 }
 
+// 3.5 base parser
 function parseBase(base) {
-  const mmToPx = 0.06 * 15;
+  const MM_TO_PX = 0.06 * 15;
 
   if (base.includes("x")) {
     const [w, h] = base.replace("mm", "").split("x").map(Number);
-    return { shape: "oval", w: w * mmToPx, h: h * mmToPx };
+    return { shape: "oval", w: w * MM_TO_PX, h: h * MM_TO_PX };
   }
 
   const d = Number(base.replace("mm", ""));
-  return { shape: "circle", r: (d / 2) * mmToPx };
+  return { shape: "circle", r: (d / 2) * MM_TO_PX };
 }
-
