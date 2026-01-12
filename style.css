@@ -1,7 +1,7 @@
 body {
   margin: 0;
   display: flex;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
 }
 
 #sidebar {
@@ -11,14 +11,10 @@ body {
   padding: 10px;
 }
 
-#unit-list {
-  margin-top: 10px;
-}
-
 .unit {
   background: #333;
-  margin-bottom: 6px;
   padding: 6px;
+  margin-bottom: 6px;
   cursor: pointer;
 }
 
@@ -29,4 +25,3 @@ body {
 canvas {
   background: #eee;
 }
-
