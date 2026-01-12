@@ -1,9 +1,0 @@
-{
-  "Termagant": { "shape": "circle", "size": 25 },
-  "Space Marine": { "shape": "circle", "size": 32 },
-  "Terminator": { "shape": "circle", "size": 40 },
-  "Custodian Guard": { "shape": "circle", "size": 40 },
-  "Carnifex": { "shape": "oval", "width": 105, "height": 70 },
-  "Knight": { "shape": "oval", "width": 170, "height": 105 }
-}
-
