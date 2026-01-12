@@ -155,3 +155,24 @@ function parseBase(baseString) {
     return { shape: "circle", r: (d / 2) * scale };
   }
 }
+
+function spawn(name, count) {
+  let base;
+
+  if (name === "Termagant") base = { shape: "circle", r: 12 };
+  if (name === "Zoanthrope") base = { shape: "circle", r: 20 };
+  if (name === "Neurolictor") base = { shape: "circle", r: 20 };
+
+  let x = 120;
+  let y = 120;
+
+  for (let i = 0; i < count; i++) {
+    models.push({
+      shape: base.shape,
+      r: base.r,
+      x: x + i * 28,
+      y
+    });
+  }
+}
+
