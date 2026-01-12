@@ -7,6 +7,7 @@ const SCALE = 15;
 let dragging = null;
 let last = null;
 
+// 5.1 init
 export function setupBoard() {
   canvas.onmousedown = onDown;
   canvas.onmousemove = onMove;
@@ -14,6 +15,7 @@ export function setupBoard() {
   requestAnimationFrame(draw);
 }
 
+// 5.2 spawn unit
 export function spawnUnit(unit) {
   let x = 100;
   let y = 100 + state.models.length * 20;
@@ -28,6 +30,7 @@ export function spawnUnit(unit) {
   }
 }
 
+// 5.3 draw loop
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -47,14 +50,17 @@ function draw() {
   requestAnimationFrame(draw);
 }
 
+// 5.4 mouse down
 function onDown(e) {
   const mx = e.offsetX;
   const my = e.offsetY;
 
   state.models.forEach(m => {
-    const hit = m.shape === "circle"
-      ? Math.hypot(mx - m.x, my - m.y) <= m.r
-      : Math.abs(mx - m.x) <= m.w / 2 && Math.abs(my - m.y) <= m.h / 2;
+    const hit =
+      m.shape === "circle"
+        ? Math.hypot(mx - m.x, my - m.y) <= m.r
+        : Math.abs(mx - m.x) <= m.w / 2 &&
+          Math.abs(my - m.y) <= m.h / 2;
 
     if (hit) {
       dragging = m;
@@ -63,6 +69,7 @@ function onDown(e) {
   });
 }
 
+// 5.5 mouse move
 function onMove(e) {
   if (!dragging) return;
 
@@ -74,4 +81,3 @@ function onMove(e) {
 
   last = { x: e.offsetX, y: e.offsetY };
 }
-
