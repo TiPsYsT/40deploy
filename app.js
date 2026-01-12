@@ -1,3 +1,9 @@
+reader.onload = () => {
+  console.log("JSON loaded");
+  models = [];
+  parseRoster(JSON.parse(reader.result));
+};
+
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
