@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>40K Deployment Trainer</title>
+  <style>
+    body { margin:0; display:flex; font-family:Arial }
+    #sidebar { width:280px; background:#222; color:white; padding:10px }
+    canvas { background:#eee }
+    button { width:100%; margin:4px 0; padding:6px }
+  </style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h3>Units</h3>
+  <button onclick="spawn('Termagant',20)">Termagants x20</button>
+  <button onclick="spawn('Zoanthrope',6)">Zoanthropes x6</button>
+  <button onclick="spawn('Neurolictor',1)">Neurolictor</button>
+  <hr>
+  <input type="file" id="import" />
+</div>
+
+<canvas id="board" width="900" height="660"></canvas>
+
+<script src="app.js"></script>
+</body>
+</html>
 
