@@ -89,7 +89,7 @@ canvas.onmouseup = () => {
 };
 
 /* =========================
-   NEW RECRUIT IMPORT
+   NEW RECRUIT IMPORT (ROBUST)
 ========================= */
 document.getElementById("import").addEventListener("change", e => {
   const file = e.target.files[0];
@@ -98,16 +98,15 @@ document.getElementById("import").addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => {
     const data = JSON.parse(reader.result);
-    importFromNewRecruit(data);
+    models = [];
+    importForces(data);
   };
   reader.readAsText(file);
 });
 
-function importFromNewRecruit(data) {
-  models = []; // clear board
-
+function importForces(data) {
   if (!data.roster || !data.roster.forces) {
-    alert("Fel format – exportera JSON från New Recruit");
+    alert("Fel fil – exportera JSON från New Recruit");
     return;
   }
 
@@ -116,39 +115,44 @@ function importFromNewRecruit(data) {
 
   data.roster.forces.forEach(force => {
     force.selections.forEach(sel => {
-      y = spawnSelection(sel, x, y);
+      y = parseSelection(sel, x, y);
       y += 40;
     });
   });
 }
 
-function spawnSelection(sel, x, y) {
-  // If this selection IS a model (has base)
-  if (sel.base) {
-    const base = parseBase(sel.base);
+function parseSelection(sel, x, y) {
+  // Kolla model profiles
+  if (sel.profiles) {
+    sel.profiles.forEach(p => {
+      if (p.type === "Model" && p.characteristics?.Base) {
+        const base = parseBase(p.characteristics.Base);
 
-    models.push({
-      shape: base.shape,
-      r: base.r,
-      w: base.w,
-      h: base.h,
-      x,
-      y
+        const count = sel.number || 1;
+        for (let i = 0; i < count; i++) {
+          models.push({
+            shape: base.shape,
+            r: base.r,
+            w: base.w,
+            h: base.h,
+            x: x + i * 28,
+            y
+          });
+        }
+        y += 28;
+      }
     });
-
-    return y + 28;
   }
 
-  // Otherwise recurse into child selections
+  // Recurse children
   if (sel.selections) {
-    sel.selections.forEach((child, i) => {
-      y = spawnSelection(child, x + i * 28, y);
+    sel.selections.forEach(child => {
+      y = parseSelection(child, x, y);
     });
   }
 
   return y;
 }
-
 /* =========================
    BASE PARSER
 ========================= */
