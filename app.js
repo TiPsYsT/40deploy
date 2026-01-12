@@ -1,56 +1,70 @@
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
+document.getElementById("import").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-const SCALE = 15; // px per inch
-let models = [];
-let selected = [];
-let dragging = false;
-let start = null;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const data = JSON.parse(reader.result);
+    importFromNewRecruit(data);
+  };
+  reader.readAsText(file);
+});
 
-function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function importFromNewRecruit(data) {
+  if (!data.roster || !data.roster.forces) {
+    alert("Fel fil – exportera JSON från New Recruit");
+    return;
+  }
 
-  // board
-  ctx.strokeRect(0,0,60*SCALE,44*SCALE);
+  let spawnX = 120;
+  let spawnY = 200;
 
-  models.forEach(m=>{
-    ctx.beginPath();
-    ctx.arc(m.x,m.y,m.r,0,Math.PI*2);
-    ctx.fillStyle = selected.includes(m) ? "red" : "black";
-    ctx.fill();
+  data.roster.forces.forEach(force => {
+    force.selections.forEach(unit => {
+      spawnModelsFromSelection(unit, spawnX, spawnY);
+      spawnY += 60;
+    });
   });
-
-  requestAnimationFrame(draw);
 }
 
-function spawn(type,count){
-  for(let i=0;i<count;i++){
+function spawnModelsFromSelection(selection, x, y) {
+  // Om detta är en modell (har base)
+  if (selection.base) {
+    const base = parseBase(selection.base);
     models.push({
-      type,
-      r: type==="Neurolictor"?25:12,
-      x:100+i*26,
-      y:120
+      type: selection.name,
+      r: base.r,
+      w: base.w,
+      h: base.h,
+      shape: base.shape,
+      x,
+      y
+    });
+    return;
+  }
+
+  // Annars: gå djupare (units innehåller modeller)
+  if (selection.selections) {
+    selection.selections.forEach((s, i) => {
+      spawnModelsFromSelection(s, x + i * 28, y);
     });
   }
 }
 
-canvas.onmousedown = e=>{
-  start = {x:e.offsetX,y:e.offsetY};
-  selected = models.filter(m =>
-    Math.hypot(m.x-e.offsetX,m.y-e.offsetY) < m.r
-  );
-  dragging = selected.length>0;
-};
-
-canvas.onmousemove = e=>{
-  if(!dragging) return;
-  let dx = e.offsetX-start.x;
-  let dy = e.offsetY-start.y;
-  selected.forEach(m=>{ m.x+=dx; m.y+=dy; });
-  start = {x:e.offsetX,y:e.offsetY};
-};
-
-canvas.onmouseup = ()=> dragging=false;
-
-draw();
-
+function parseBase(baseString) {
+  // Ex: "25mm", "32mm", "60x35mm"
+  if (baseString.includes("x")) {
+    const [w, h] = baseString.replace("mm", "").split("x").map(Number);
+    return {
+      shape: "oval",
+      w: w * 0.06 * 15,
+      h: h * 0.06 * 15
+    };
+  } else {
+    const d = Number(baseString.replace("mm", ""));
+    return {
+      shape: "circle",
+      r: (d / 2) * 0.06 * 15
+    };
+  }
+}
