@@ -1,3 +1,96 @@
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
+
+const SCALE = 15; // px per inch (60x44 board)
+let models = [];
+let selected = [];
+let dragging = false;
+let lastPos = null;
+
+/* =========================
+   DRAW LOOP
+========================= */
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Board outline (60x44")
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, 60 * SCALE, 44 * SCALE);
+
+  // Draw models
+  models.forEach(m => {
+    ctx.beginPath();
+
+    if (m.shape === "oval") {
+      ctx.ellipse(
+        m.x,
+        m.y,
+        m.w / 2,
+        m.h / 2,
+        0,
+        0,
+        Math.PI * 2
+      );
+    } else {
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+    }
+
+    ctx.fillStyle = selected.includes(m) ? "red" : "black";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+/* =========================
+   MOUSE INTERACTION
+========================= */
+canvas.onmousedown = e => {
+  const mx = e.offsetX;
+  const my = e.offsetY;
+
+  selected = models.filter(m => {
+    if (m.shape === "oval") {
+      return (
+        Math.abs(mx - m.x) <= m.w / 2 &&
+        Math.abs(my - m.y) <= m.h / 2
+      );
+    } else {
+      return Math.hypot(mx - m.x, my - m.y) <= m.r;
+    }
+  });
+
+  if (selected.length > 0) {
+    dragging = true;
+    lastPos = { x: mx, y: my };
+  }
+};
+
+canvas.onmousemove = e => {
+  if (!dragging || !lastPos) return;
+
+  const dx = e.offsetX - lastPos.x;
+  const dy = e.offsetY - lastPos.y;
+
+  selected.forEach(m => {
+    m.x += dx;
+    m.y += dy;
+  });
+
+  lastPos = { x: e.offsetX, y: e.offsetY };
+};
+
+canvas.onmouseup = () => {
+  dragging = false;
+  lastPos = null;
+};
+
+/* =========================
+   NEW RECRUIT IMPORT
+========================= */
 document.getElementById("import").addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -11,60 +104,70 @@ document.getElementById("import").addEventListener("change", e => {
 });
 
 function importFromNewRecruit(data) {
+  models = []; // clear board
+
   if (!data.roster || !data.roster.forces) {
-    alert("Fel fil – exportera JSON från New Recruit");
+    alert("Fel format – exportera JSON från New Recruit");
     return;
   }
 
-  let spawnX = 120;
-  let spawnY = 200;
+  let x = 120;
+  let y = 120;
 
   data.roster.forces.forEach(force => {
-    force.selections.forEach(unit => {
-      spawnModelsFromSelection(unit, spawnX, spawnY);
-      spawnY += 60;
+    force.selections.forEach(sel => {
+      y = spawnSelection(sel, x, y);
+      y += 40;
     });
   });
 }
 
-function spawnModelsFromSelection(selection, x, y) {
-  // Om detta är en modell (har base)
-  if (selection.base) {
-    const base = parseBase(selection.base);
+function spawnSelection(sel, x, y) {
+  // If this selection IS a model (has base)
+  if (sel.base) {
+    const base = parseBase(sel.base);
+
     models.push({
-      type: selection.name,
+      shape: base.shape,
       r: base.r,
       w: base.w,
       h: base.h,
-      shape: base.shape,
       x,
       y
     });
-    return;
+
+    return y + 28;
   }
 
-  // Annars: gå djupare (units innehåller modeller)
-  if (selection.selections) {
-    selection.selections.forEach((s, i) => {
-      spawnModelsFromSelection(s, x + i * 28, y);
+  // Otherwise recurse into child selections
+  if (sel.selections) {
+    sel.selections.forEach((child, i) => {
+      y = spawnSelection(child, x + i * 28, y);
     });
   }
+
+  return y;
 }
 
+/* =========================
+   BASE PARSER
+========================= */
 function parseBase(baseString) {
-  // Ex: "25mm", "32mm", "60x35mm"
+  // Examples: "25mm", "32mm", "60x35mm"
+  const scale = 0.06 * SCALE;
+
   if (baseString.includes("x")) {
     const [w, h] = baseString.replace("mm", "").split("x").map(Number);
     return {
       shape: "oval",
-      w: w * 0.06 * 15,
-      h: h * 0.06 * 15
+      w: w * scale,
+      h: h * scale
     };
   } else {
     const d = Number(baseString.replace("mm", ""));
     return {
       shape: "circle",
-      r: (d / 2) * 0.06 * 15
+      r: (d / 2) * scale
     };
   }
 }
