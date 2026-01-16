@@ -8,14 +8,15 @@ export function importNewRecruit(json) {
     force.selections?.forEach(sel => walk(sel));
   });
 
-  function walk(sel) {
-    // ENDA REGELN: count > 0
+  function walk(sel, parentName = null) {
+    // OM denna selection har count → detta är EN MODELL
     if (typeof sel.count === "number" && sel.count > 0) {
+      const name = parentName || sel.name;
       const base = sel.base || "32mm";
 
       for (let i = 0; i < sel.count; i++) {
         models.push({
-          name: sel.name,
+          name,
           base,
           x: null,
           y: null
@@ -23,9 +24,11 @@ export function importNewRecruit(json) {
       }
     }
 
-    // Gå alltid djupare
+    // Gå alltid neråt, och skicka med parent-namn
     if (Array.isArray(sel.selections)) {
-      sel.selections.forEach(child => walk(child));
+      sel.selections.forEach(child =>
+        walk(child, sel.name)
+      );
     }
   }
 
