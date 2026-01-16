@@ -1,15 +1,20 @@
 export function importNewRecruit(json) {
   const models = [];
 
-  json.units.forEach(unit => {
-    for (let i = 0; i < unit.count; i++) {
-      models.push({
-        name: unit.name,
-        base: unit.base, // ex: "25mm" eller "60x35mm"
-        x: null,
-        y: null
+  // New Recruit: forces -> selections
+  json.forces.forEach(force => {
+    force.selections.forEach(sel => {
+      if (!sel.models) return;
+
+      sel.models.forEach(model => {
+        models.push({
+          name: sel.name,
+          base: model.base || "32mm",
+          x: null,
+          y: null
+        });
       });
-    }
+    });
   });
 
   return models;
