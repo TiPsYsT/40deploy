@@ -1,27 +1,22 @@
 body {
-  margin: 0;
+  font-family: sans-serif;
+}
+
+#container {
   display: flex;
-  font-family: Arial;
 }
 
 #sidebar {
-  width: 280px;
-  background: #222;
-  color: white;
-  padding: 10px;
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding: 8px;
 }
 
 .unit {
-  background: #333;
-  padding: 6px;
-  margin-bottom: 6px;
   cursor: pointer;
-}
-
-.unit:hover {
-  background: #444;
+  padding: 4px;
 }
 
 canvas {
-  background: #eee;
+  border: 1px solid black;
 }
