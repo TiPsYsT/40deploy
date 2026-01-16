@@ -1,20 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>40K Deployment Trainer</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <input type="file" id="fileInput" />
 
-<div id="sidebar">
-  <h3>Army</h3>
-  <input type="file" id="import">
-  <div id="unit-list"></div>
-</div>
+  <div id="container">
+    <div id="sidebar"></div>
+    <canvas id="board" width="600" height="440"></canvas>
+  </div>
 
-<canvas id="board" width="900" height="660"></canvas>
-
-<script type="module" src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
