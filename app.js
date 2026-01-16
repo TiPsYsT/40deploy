@@ -8,10 +8,13 @@ console.log("APP STARTAR");
 
 const fileInput = document.getElementById("fileInput");
 
-fileInput.addEventListener("change", async e => {
-  console.log("FIL VALD");
+(async function init() {
+  await loadBases();
+  console.log("BASES LADDADE");
+})();
 
-  await loadBases(); // 🔑 ladda bases.json först
+fileInput.addEventListener("change", e => {
+  console.log("FIL VALD");
 
   const file = e.target.files[0];
   const reader = new FileReader();
