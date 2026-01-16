@@ -1,39 +1,38 @@
 export function importNewRecruit(json) {
   const models = [];
 
-  const forces =
-    json.forces ||
-    json.roster?.forces;
-
-  if (!forces) {
-    console.error("HITTAR INGA FORCES", json);
-    return models;
-  }
+  const forces = json.roster?.forces;
+  if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => {
-      walkSelection(sel);
-    });
+    force.selections?.forEach(sel => walk(sel));
   });
 
-  function walkSelection(sel) {
-    // Om selection innehåller modeller → skapa baser
-    if (sel.models && sel.models.length > 0) {
-      sel.models.forEach(model => {
-        models.push({
-          name: sel.name,
-          base: model.base || sel.base || "32mm",
-          x: null,
-          y: null
-        });
+  function walk(sel) {
+    const count = sel.count || sel.number || 0;
+    const base = sel.base || guessBase(sel.name);
+
+    // skapa modeller från count
+    for (let i = 0; i < count; i++) {
+      models.push({
+        name: sel.name,
+        base,
+        x: null,
+        y: null
       });
     }
 
-    // Rekursivt: vissa units har selections i selections
-    if (sel.selections) {
-      sel.selections.forEach(child => walkSelection(child));
-    }
+    // gå djupare
+    sel.selections?.forEach(child => walk(child));
   }
 
   return models;
+}
+
+/**
+ * TEMP fallback tills vi läser bas från profiles (steg 2)
+ * Ingen faction-logik, bara säker default
+ */
+function guessBase(name) {
+  return "32mm";
 }
