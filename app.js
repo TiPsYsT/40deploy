@@ -1,3 +1,4 @@
+console.log("APP STARTAR");
 import { setModels } from "./js/state.js";
 import { importNewRecruit } from "./js/importer.js";
 import { renderSidebar } from "./js/sidebar.js";
