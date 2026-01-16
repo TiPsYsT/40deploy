@@ -7,37 +7,22 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel, null));
+    force.selections?.forEach(sel => walk(sel));
   });
 
-  function walk(sel, parentName) {
-    const unitName = normalizeName(parentName ?? sel.name);
-
-    // FALL A: horde / multi-model
-    if (sel.type === "model" && typeof sel.number === "number") {
-      const base = resolveBase(unitName);
-
-      for (let i = 0; i < sel.number; i++) {
-        models.push({
-          name: unitName,
-          base,
-          x: null,
-          y: null
-        });
-      }
-    }
-
-    // FALL B: single-model unit (ingen model-child)
+  function walk(sel) {
+    // ✅ skapa modeller endast på "leaf nodes" med number
     if (
-      sel.type === "unit" &&
       typeof sel.number === "number" &&
-      !hasModelChildren(sel)
+      sel.number > 0 &&
+      !hasNumberChildren(sel)
     ) {
-      const base = resolveBase(unitName);
+      const name = normalizeName(sel.name);
+      const base = resolveBase(name);
 
       for (let i = 0; i < sel.number; i++) {
         models.push({
-          name: unitName,
+          name,
           base,
           x: null,
           y: null
@@ -46,17 +31,17 @@ export function importNewRecruit(json) {
     }
 
     if (!Array.isArray(sel.selections)) return;
-    sel.selections.forEach(child =>
-      walk(child, unitName)
-    );
+    sel.selections.forEach(child => walk(child));
   }
 
   return models;
 }
 
-function hasModelChildren(sel) {
+function hasNumberChildren(sel) {
   if (!Array.isArray(sel.selections)) return false;
-  return sel.selections.some(s => s.type === "model");
+  return sel.selections.some(
+    c => typeof c.number === "number" && c.number > 0
+  );
 }
 
 function normalizeName(name) {
