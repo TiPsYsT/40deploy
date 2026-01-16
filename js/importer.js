@@ -11,25 +11,24 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    if (!Array.isArray(sel.selections)) return;
+    // ✅ skapa modeller ENDAST från selectionens egna number
+    if (typeof sel.number === "number" && sel.number > 0) {
+      const name = normalizeName(sel.name);
+      const base = resolveBase(name); // enda källan
 
-    sel.selections.forEach(child => {
-      if (typeof child.number === "number" && child.number > 0) {
-        const name = normalizeName(sel.name);
-        const base = resolveBase(name); // 🔑 ENDA källan
-
-        for (let i = 0; i < child.number; i++) {
-          models.push({
-            name,
-            base, // kan vara null
-            x: null,
-            y: null
-          });
-        }
+      for (let i = 0; i < sel.number; i++) {
+        models.push({
+          name,
+          base, // kan vara null
+          x: null,
+          y: null
+        });
       }
+    }
 
-      walk(child);
-    });
+    // fortsätt gå ner i trädet
+    if (!Array.isArray(sel.selections)) return;
+    sel.selections.forEach(child => walk(child));
   }
 
   return models;
