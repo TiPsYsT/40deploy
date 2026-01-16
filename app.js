@@ -19,10 +19,19 @@ fileInput.onchange = e => {
     console.log("FILE READ OK");
 
     const json = JSON.parse(reader.result);
-    console.log("JSON ROOT KEYS:", Object.keys(json));
+console.log("JSON ROOT KEYS:", Object.keys(json));
 
-    const models = importNewRecruit(json);
-    console.log("MODELS:", models);
+if (json.roster) {
+  console.log("ROSTER KEYS:", Object.keys(json.roster));
+}
+
+if (json.roster?.forces) {
+  console.log("FORCES LENGTH:", json.roster.forces.length);
+  console.log("FORCE[0] KEYS:", Object.keys(json.roster.forces[0]));
+}
+
+const models = importNewRecruit(json);
+console.log("MODELS:", models);
 
     setModels(models);
     renderSidebar(spawnModel);
