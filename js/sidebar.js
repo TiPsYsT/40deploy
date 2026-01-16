@@ -1,21 +1,22 @@
-import { state } from "./state.js";
-import { spawnUnit } from "./board.js";
+import { getModels } from "./state.js";
 
-// 4.1 init
-export function setupSidebar() {
-  renderSidebar();
-}
+export function renderSidebar(onSelect) {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.innerHTML = "";
 
-// 4.2 render
-export function renderSidebar() {
-  const list = document.getElementById("unit-list");
-  list.innerHTML = "";
+  const grouped = {};
 
-  state.armyUnits.forEach(unit => {
+  getModels().forEach(m => {
+    const key = `${m.name}-${m.base}`;
+    grouped[key] ??= { ...m, count: 0 };
+    grouped[key].count++;
+  });
+
+  Object.values(grouped).forEach(unit => {
     const div = document.createElement("div");
     div.className = "unit";
-    div.textContent = `${unit.name} (${unit.count})`;
-    div.onclick = () => spawnUnit(unit);
-    list.appendChild(div);
+    div.textContent = `${unit.name} (${unit.count}) – ${unit.base}`;
+    div.onclick = () => onSelect(unit);
+    sidebar.appendChild(div);
   });
 }
