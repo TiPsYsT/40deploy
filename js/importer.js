@@ -4,34 +4,32 @@ export function importNewRecruit(json) {
   const forces = json.roster?.forces;
   if (!forces) return models;
 
+  console.log("IMPORTER START");
+
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel));
+    force.selections?.forEach(sel => walk(sel, 0));
   });
 
-  function walk(sel) {
-    // Om denna selection har child-selections med count → detta är en unit
-    if (Array.isArray(sel.selections)) {
-      sel.selections.forEach(child => {
-        if (typeof child.count === "number" && child.count > 0) {
-          const base = sel.base || "32mm";
+  function walk(sel, depth) {
+    const indent = "  ".repeat(depth);
 
-          for (let i = 0; i < child.count; i++) {
-            models.push({
-              name: sel.name,   // parent = unit-namn
-              base,
-              x: null,
-              y: null
-            });
-          }
-        }
-      });
-    }
+    console.log(
+      indent + "SELECTION:",
+      sel.name,
+      {
+        count: sel.count,
+        number: sel.number,
+        hasProfiles: Array.isArray(sel.profiles),
+        hasCosts: Array.isArray(sel.costs),
+        hasSelections: Array.isArray(sel.selections),
+      }
+    );
 
-    // fortsätt alltid neråt
     if (Array.isArray(sel.selections)) {
-      sel.selections.forEach(child => walk(child));
+      sel.selections.forEach(child => walk(child, depth + 1));
     }
   }
 
+  console.log("IMPORTER END");
   return models;
 }
