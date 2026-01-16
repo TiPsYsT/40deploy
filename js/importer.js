@@ -1,15 +1,6 @@
-// Steg 2B – basstorlek från profiles + säkra standard-overrides
-// Importer ska ENDAST skapa modeller + basdata. Ingen UI-logik här.
+import { resolveBase } from "./baseResolver.js";
 
-const BASE_OVERRIDES = {
-  "The Swarmlord": "60mm",
-  "Swarmlord": "60mm",
-  "Carnifex": "60mm",
-  "Carnifexes": "60mm",
-  "Ripper Swarm": "40mm",
-  "Ripper Swarms": "40mm"
-};
-
+// Importer = data only
 export function importNewRecruit(json) {
   const models = [];
 
@@ -24,27 +15,25 @@ export function importNewRecruit(json) {
     if (!Array.isArray(sel.selections)) return;
 
     sel.selections.forEach(child => {
-      // BattleScribe använder "number" för antal
       if (typeof child.number === "number" && child.number > 0) {
         const unitName = normalizeName(sel.name);
 
         const base =
-          BASE_OVERRIDES[unitName] ||
           readBaseFromProfiles(child) ||
           readBaseFromProfiles(sel) ||
-          "32mm";
+          resolveBase(unitName) ||
+          null;
 
         for (let i = 0; i < child.number; i++) {
           models.push({
             name: unitName,
-            base,       // ex: "32mm", "40mm", "60mm", "60x35"
+            base,
             x: null,
             y: null
           });
         }
       }
 
-      // fortsätt alltid neråt
       walk(child);
     });
   }
@@ -52,11 +41,12 @@ export function importNewRecruit(json) {
   return models;
 }
 
-/* ---------------- helpers ---------------- */
+/* -------- helpers -------- */
 
 function normalizeName(name) {
   return name
-    .replace(/\s*\(.*\)$/g, "") // ta bort "(x models)"
+    .replace(/\s*\(.*\)$/g, "")
+    .replace(/\s*–.*$/g, "")
     .trim();
 }
 
@@ -69,18 +59,15 @@ function readBaseFromProfiles(sel) {
     for (const c of profile.characteristics) {
       if (!c.name) continue;
 
-      const key = c.name.toLowerCase();
-      const val = String(c.value || "").toLowerCase();
+      if (c.name.toLowerCase().includes("base")) {
+        const val = String(c.value || "").toLowerCase();
 
-      if (key.includes("base")) {
-        // oval
         if (val.includes("x")) {
-          return val.replace("mm", "").trim(); // "60x35"
+          return val.replace("mm", "").trim();
         }
 
-        // rund
         if (val.includes("mm")) {
-          return val.replace(" ", ""); // "32mm"
+          return val.replace(" ", "");
         }
       }
     }
