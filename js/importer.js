@@ -7,17 +7,15 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel, true));
+    force.selections?.forEach(sel => walk(sel, null));
   });
 
-  function walk(sel, isTopLevel = false) {
-    // ✅ skapa modeller ENDAST på toppnivå
-    if (
-      isTopLevel &&
-      typeof sel.number === "number" &&
-      sel.number > 0
-    ) {
-      const name = normalizeName(sel.name);
+  function walk(sel, parentName) {
+    const currentName = parentName ?? sel.name;
+
+    // ✅ ENDA stället vi skapar modeller
+    if (sel.type === "model" && typeof sel.number === "number") {
+      const name = normalizeName(currentName);
       const base = resolveBase(name);
 
       for (let i = 0; i < sel.number; i++) {
@@ -31,7 +29,9 @@ export function importNewRecruit(json) {
     }
 
     if (!Array.isArray(sel.selections)) return;
-    sel.selections.forEach(child => walk(child, false));
+    sel.selections.forEach(child =>
+      walk(child, currentName)
+    );
   }
 
   return models;
