@@ -9,13 +9,13 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    const hasChildren =
-      Array.isArray(sel.selections) && sel.selections.length > 0;
-
     const isModel =
       typeof sel.count === "number" &&
       sel.count > 0 &&
-      !hasChildren;
+      Array.isArray(sel.categories) &&
+      sel.categories.some(c =>
+        c.name?.toLowerCase().includes("model")
+      );
 
     if (isModel) {
       const base = sel.base || "32mm";
@@ -30,7 +30,7 @@ export function importNewRecruit(json) {
       }
     }
 
-    if (hasChildren) {
+    if (Array.isArray(sel.selections)) {
       sel.selections.forEach(child => walk(child));
     }
   }
