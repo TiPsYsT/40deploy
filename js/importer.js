@@ -7,28 +7,31 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel));
+    force.selections?.forEach(sel => walk(sel, true));
   });
 
-  function walk(sel) {
-    // ✅ skapa modeller ENDAST från selectionens egna number
-    if (typeof sel.number === "number" && sel.number > 0) {
+  function walk(sel, isTopLevel = false) {
+    // ✅ skapa modeller ENDAST på toppnivå
+    if (
+      isTopLevel &&
+      typeof sel.number === "number" &&
+      sel.number > 0
+    ) {
       const name = normalizeName(sel.name);
-      const base = resolveBase(name); // enda källan
+      const base = resolveBase(name);
 
       for (let i = 0; i < sel.number; i++) {
         models.push({
           name,
-          base, // kan vara null
+          base,
           x: null,
           y: null
         });
       }
     }
 
-    // fortsätt gå ner i trädet
     if (!Array.isArray(sel.selections)) return;
-    sel.selections.forEach(child => walk(child));
+    sel.selections.forEach(child => walk(child, false));
   }
 
   return models;
