@@ -9,30 +9,25 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    const count = sel.count || sel.number || 0;
-    const base = sel.base || guessBase(sel.name);
+    // 1. Om detta selection-steg HAR count → det är en unit
+    if (typeof sel.count === "number" && sel.count > 0) {
+      const base = sel.base || "32mm";
 
-    // skapa modeller från count
-    for (let i = 0; i < count; i++) {
-      models.push({
-        name: sel.name,
-        base,
-        x: null,
-        y: null
-      });
+      for (let i = 0; i < sel.count; i++) {
+        models.push({
+          name: sel.name,
+          base,
+          x: null,
+          y: null
+        });
+      }
     }
 
-    // gå djupare
-    sel.selections?.forEach(child => walk(child));
+    // 2. Gå ALLTID djupare
+    if (Array.isArray(sel.selections)) {
+      sel.selections.forEach(child => walk(child));
+    }
   }
 
   return models;
-}
-
-/**
- * TEMP fallback tills vi läser bas från profiles (steg 2)
- * Ingen faction-logik, bara säker default
- */
-function guessBase(name) {
-  return "32mm";
 }
