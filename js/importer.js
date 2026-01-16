@@ -9,7 +9,7 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    // 1. Om detta selection-steg HAR count → det är en unit
+    // ENDA REGELN: om count finns → skapa modeller
     if (typeof sel.count === "number" && sel.count > 0) {
       const base = sel.base || "32mm";
 
@@ -23,7 +23,7 @@ export function importNewRecruit(json) {
       }
     }
 
-    // 2. Gå ALLTID djupare
+    // ALLTID gå djupare
     if (Array.isArray(sel.selections)) {
       sel.selections.forEach(child => walk(child));
     }
