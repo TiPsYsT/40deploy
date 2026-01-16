@@ -11,16 +11,33 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel, parentName) {
-    const currentName = parentName ?? sel.name;
+    const unitName = normalizeName(parentName ?? sel.name);
 
-    // ✅ ENDA stället vi skapar modeller
+    // FALL A: horde / multi-model
     if (sel.type === "model" && typeof sel.number === "number") {
-      const name = normalizeName(currentName);
-      const base = resolveBase(name);
+      const base = resolveBase(unitName);
 
       for (let i = 0; i < sel.number; i++) {
         models.push({
-          name,
+          name: unitName,
+          base,
+          x: null,
+          y: null
+        });
+      }
+    }
+
+    // FALL B: single-model unit (ingen model-child)
+    if (
+      sel.type === "unit" &&
+      typeof sel.number === "number" &&
+      !hasModelChildren(sel)
+    ) {
+      const base = resolveBase(unitName);
+
+      for (let i = 0; i < sel.number; i++) {
+        models.push({
+          name: unitName,
           base,
           x: null,
           y: null
@@ -30,11 +47,16 @@ export function importNewRecruit(json) {
 
     if (!Array.isArray(sel.selections)) return;
     sel.selections.forEach(child =>
-      walk(child, currentName)
+      walk(child, unitName)
     );
   }
 
   return models;
+}
+
+function hasModelChildren(sel) {
+  if (!Array.isArray(sel.selections)) return false;
+  return sel.selections.some(s => s.type === "model");
 }
 
 function normalizeName(name) {
