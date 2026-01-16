@@ -15,33 +15,38 @@ export function renderSidebar(onSelect) {
   const grouped = {};
 
   getModels().forEach(m => {
-    // 1. filtrera bort metadata
+    // filtrera bort metadata
     if (META_NAMES.some(k => m.name.includes(k))) return;
 
-    // 2. filtrera bort units utan bas (null)
+    // filtrera bort units utan bas
     if (!m.base) return;
 
-    const key = m.name; // 🔑 INGEN bas i nyckeln
+    // 🔑 NORMALISERA plural → singular
+    const baseName = normalizeUnitName(m.name);
 
-    if (!grouped[key]) {
-      grouped[key] = {
-        name: m.name,
+    if (!grouped[baseName]) {
+      grouped[baseName] = {
+        name: baseName,
         count: 0
       };
     }
 
-    grouped[key].count++;
+    grouped[baseName].count++;
   });
 
   Object.values(grouped).forEach(unit => {
     const div = document.createElement("div");
     div.className = "unit";
-
-    // ✅ ENDA texten som visas
     div.textContent = `${unit.name} (${unit.count})`;
 
     div.onclick = () => onSelect(unit);
-
     sidebar.appendChild(div);
   });
+}
+
+// 👇 ENDA “regeln” – extremt enkel
+function normalizeUnitName(name) {
+  if (name.endsWith("es")) return name.slice(0, -2);
+  if (name.endsWith("s")) return name.slice(0, -1);
+  return name;
 }
