@@ -10,14 +10,19 @@ export function importNewRecruit(json) {
     force.selections?.forEach(sel => walk(sel, null));
   });
 
-  function walk(sel, parentName) {
-    const unitName = normalizeName(parentName ?? sel.name);
+  function walk(sel, currentUnitName) {
+    // ✅ uppdatera unit-namn ENDAST när vi är på unit-nivå
+    let unitName = currentUnitName;
+    if (sel.type === "unit") {
+      unitName = normalizeName(sel.name);
+    }
 
-    // ✅ ENDA stället vi skapar modeller
+    // ✅ skapa modeller ENDAST från model-noder
     if (
       sel.type === "model" &&
       typeof sel.number === "number" &&
-      sel.number > 0
+      sel.number > 0 &&
+      unitName
     ) {
       const base = resolveBase(unitName);
 
