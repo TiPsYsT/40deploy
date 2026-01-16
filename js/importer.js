@@ -9,16 +9,19 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    const hasUnitProfile =
-      Array.isArray(sel.profiles) &&
-      sel.profiles.some(p => p.typeName === "Unit");
+    const isMeta =
+      sel.name === "Battle Size" ||
+      sel.name === "Detachment" ||
+      sel.name === "Show/Hide Options";
 
-    const isModel =
+    const isUnit =
+      !isMeta &&
       typeof sel.count === "number" &&
       sel.count > 0 &&
-      hasUnitProfile;
+      Array.isArray(sel.profiles) &&
+      Array.isArray(sel.costs);
 
-    if (isModel) {
+    if (isUnit) {
       const base = sel.base || "32mm";
 
       for (let i = 0; i < sel.count; i++) {
