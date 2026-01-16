@@ -9,13 +9,14 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
+    const hasUnitProfile =
+      Array.isArray(sel.profiles) &&
+      sel.profiles.some(p => p.typeName === "Unit");
+
     const isModel =
       typeof sel.count === "number" &&
       sel.count > 0 &&
-      Array.isArray(sel.categories) &&
-      sel.categories.some(c =>
-        c.name?.toLowerCase().includes("model")
-      );
+      hasUnitProfile;
 
     if (isModel) {
       const base = sel.base || "32mm";
