@@ -1,83 +1,51 @@
-import { state } from "./state.js";
+import { getModels } from "./state.js";
 
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const SCALE = 15;
 let dragging = null;
-let last = null;
 
-// 5.1 init
-export function setupBoard() {
-  canvas.onmousedown = onDown;
-  canvas.onmousemove = onMove;
-  canvas.onmouseup = () => dragging = null;
-  requestAnimationFrame(draw);
+export function spawnModel(unit) {
+  const model = getModels().find(m => m.name === unit.name && m.x === null);
+  if (!model) return;
+
+  model.x = 30;
+  model.y = 30;
+  draw();
 }
 
-// 5.2 spawn unit
-export function spawnUnit(unit) {
-  let x = 100;
-  let y = 100 + state.models.length * 20;
-
-  for (let i = 0; i < unit.count; i++) {
-    state.models.push({
-      ...unit.base,
-      x: x + i * 28,
-      y,
-      label: unit.name
-    });
-  }
-}
-
-// 5.3 draw loop
-function draw() {
+export function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeRect(0, 0, 60 * SCALE, 44 * SCALE);
+  getModels().forEach(m => {
+    if (m.x === null) return;
 
-  state.models.forEach(m => {
+    const r = parseBase(m.base);
     ctx.beginPath();
-    if (m.shape === "circle") {
-      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
-    } else {
-      ctx.ellipse(m.x, m.y, m.w / 2, m.h / 2, 0, 0, Math.PI * 2);
-    }
-    ctx.fillStyle = "black";
-    ctx.fill();
-  });
-
-  requestAnimationFrame(draw);
-}
-
-// 5.4 mouse down
-function onDown(e) {
-  const mx = e.offsetX;
-  const my = e.offsetY;
-
-  state.models.forEach(m => {
-    const hit =
-      m.shape === "circle"
-        ? Math.hypot(mx - m.x, my - m.y) <= m.r
-        : Math.abs(mx - m.x) <= m.w / 2 &&
-          Math.abs(my - m.y) <= m.h / 2;
-
-    if (hit) {
-      dragging = m;
-      last = { x: mx, y: my };
-    }
+    ctx.arc(m.x, m.y, r, 0, Math.PI * 2);
+    ctx.stroke();
   });
 }
 
-// 5.5 mouse move
-function onMove(e) {
+function parseBase(base) {
+  if (base.includes("x")) return 20; // oval placeholder
+  return parseInt(base) / 2 / 3; // mm → px (grov)
+}
+
+canvas.onmousedown = e => {
+  getModels().forEach(m => {
+    if (!m.x) return;
+    const dx = e.offsetX - m.x;
+    const dy = e.offsetY - m.y;
+    if (Math.hypot(dx, dy) < parseBase(m.base)) dragging = m;
+  });
+};
+
+canvas.onmousemove = e => {
   if (!dragging) return;
+  dragging.x = e.offsetX;
+  dragging.y = e.offsetY;
+  draw();
+};
 
-  const dx = e.offsetX - last.x;
-  const dy = e.offsetY - last.y;
-
-  dragging.x += dx;
-  dragging.y += dy;
-
-  last = { x: e.offsetX, y: e.offsetY };
-}
+canvas.onmouseup = () => dragging = null;
