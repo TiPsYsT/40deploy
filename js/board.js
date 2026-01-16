@@ -5,12 +5,14 @@ const ctx = canvas.getContext("2d");
 
 let dragging = null;
 
+const PX_PER_MM = 2; // justerar vi i steg 2C
+
 export function spawnModel(unit) {
   const model = getModels().find(m => m.name === unit.name && m.x === null);
   if (!model) return;
 
-  model.x = 30;
-  model.y = 30;
+  model.x = 40;
+  model.y = 40;
   draw();
 }
 
@@ -20,32 +22,59 @@ export function draw() {
   getModels().forEach(m => {
     if (m.x === null) return;
 
-    const r = parseBase(m.base);
-    ctx.beginPath();
-    ctx.arc(m.x, m.y, r, 0, Math.PI * 2);
-    ctx.stroke();
+    drawBase(m);
   });
 }
 
-function parseBase(base) {
-  if (base.includes("x")) return 20; // oval placeholder
-  return parseInt(base) / 2 / 3; // mm → px (grov)
+function drawBase(model) {
+  const base = model.base.toLowerCase();
+
+  ctx.beginPath();
+
+  if (base.includes("x")) {
+    // oval: ex "60x35"
+    const [w, h] = base.split("x").map(v => parseFloat(v));
+    ctx.ellipse(
+      model.x,
+      model.y,
+      (w / 2) * PX_PER_MM,
+      (h / 2) * PX_PER_MM,
+      0,
+      0,
+      Math.PI * 2
+    );
+  } else {
+    // rund bas: ex "32mm"
+    const mm = parseFloat(base);
+    const r = (mm / 2) * PX_PER_MM;
+    ctx.arc(model.x, model.y, r, 0, Math.PI * 2);
+  }
+
+  ctx.stroke();
 }
 
+/* Drag & drop */
 canvas.onmousedown = e => {
   getModels().forEach(m => {
-    if (!m.x) return;
+    if (m.x === null) return;
+
     const dx = e.offsetX - m.x;
     const dy = e.offsetY - m.y;
-    if (Math.hypot(dx, dy) < parseBase(m.base)) dragging = m;
+
+    if (Math.hypot(dx, dy) < 30) {
+      dragging = m;
+    }
   });
 };
 
 canvas.onmousemove = e => {
   if (!dragging) return;
+
   dragging.x = e.offsetX;
   dragging.y = e.offsetY;
   draw();
 };
 
-canvas.onmouseup = () => dragging = null;
+canvas.onmouseup = () => {
+  dragging = null;
+};
