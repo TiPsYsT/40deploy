@@ -9,19 +9,21 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    const isMeta =
-      sel.name === "Battle Size" ||
-      sel.name === "Detachment" ||
-      sel.name === "Show/Hide Options";
+    // Blacklist – metadata vi ALDRIG vill visa
+    const hiddenNames = [
+      "Battle Size",
+      "Detachment",
+      "Show/Hide Options",
+      "Legends are visible",
+      "Unaligned Forces are visible",
+      "Unaligned Fortifications are visible",
+      "Warlord"
+    ];
 
-    const isUnit =
-      !isMeta &&
-      typeof sel.count === "number" &&
-      sel.count > 0 &&
-      Array.isArray(sel.profiles) &&
-      Array.isArray(sel.costs);
+    const isHidden = hiddenNames.includes(sel.name);
 
-    if (isUnit) {
+    // Visa ALLT som har count > 0 och inte är blacklistat
+    if (!isHidden && typeof sel.count === "number" && sel.count > 0) {
       const base = sel.base || "32mm";
 
       for (let i = 0; i < sel.count; i++) {
@@ -34,6 +36,7 @@ export function importNewRecruit(json) {
       }
     }
 
+    // Gå alltid djupare
     if (Array.isArray(sel.selections)) {
       sel.selections.forEach(child => walk(child));
     }
