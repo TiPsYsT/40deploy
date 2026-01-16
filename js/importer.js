@@ -1,6 +1,5 @@
 import { resolveBase } from "./baseResolver.js";
 
-// Importer = data only
 export function importNewRecruit(json) {
   const models = [];
 
@@ -16,18 +15,13 @@ export function importNewRecruit(json) {
 
     sel.selections.forEach(child => {
       if (typeof child.number === "number" && child.number > 0) {
-        const unitName = normalizeName(sel.name);
-
-        const base =
-          readBaseFromProfiles(child) ||
-          readBaseFromProfiles(sel) ||
-          resolveBase(unitName) ||
-          null;
+        const name = normalizeName(sel.name);
+        const base = resolveBase(name); // 🔑 ENDA källan
 
         for (let i = 0; i < child.number; i++) {
           models.push({
-            name: unitName,
-            base,
+            name,
+            base, // kan vara null
             x: null,
             y: null
           });
@@ -41,37 +35,10 @@ export function importNewRecruit(json) {
   return models;
 }
 
-/* -------- helpers -------- */
-
 function normalizeName(name) {
   return name
     .replace(/\s*\(.*\)$/g, "")
     .replace(/\s*–.*$/g, "")
-    .trim();
-}
-
-function readBaseFromProfiles(sel) {
-  if (!Array.isArray(sel.profiles)) return null;
-
-  for (const profile of sel.profiles) {
-    if (!Array.isArray(profile.characteristics)) continue;
-
-    for (const c of profile.characteristics) {
-      if (!c.name) continue;
-
-      if (c.name.toLowerCase().includes("base")) {
-        const val = String(c.value || "").toLowerCase();
-
-        if (val.includes("x")) {
-          return val.replace("mm", "").trim();
-        }
-
-        if (val.includes("mm")) {
-          return val.replace(" ", "");
-        }
-      }
-    }
-  }
-
-  return null;
+    .trim()
+    .toLowerCase();
 }
