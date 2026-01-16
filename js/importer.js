@@ -7,22 +7,23 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel));
+    force.selections?.forEach(sel => walk(sel, null));
   });
 
-  function walk(sel) {
-    // ✅ skapa modeller endast på "leaf nodes" med number
+  function walk(sel, parentName) {
+    const unitName = normalizeName(parentName ?? sel.name);
+
+    // ✅ ENDA stället vi skapar modeller
     if (
+      sel.type === "model" &&
       typeof sel.number === "number" &&
-      sel.number > 0 &&
-      !hasNumberChildren(sel)
+      sel.number > 0
     ) {
-      const name = normalizeName(sel.name);
-      const base = resolveBase(name);
+      const base = resolveBase(unitName);
 
       for (let i = 0; i < sel.number; i++) {
         models.push({
-          name,
+          name: unitName,
           base,
           x: null,
           y: null
@@ -31,17 +32,12 @@ export function importNewRecruit(json) {
     }
 
     if (!Array.isArray(sel.selections)) return;
-    sel.selections.forEach(child => walk(child));
+    sel.selections.forEach(child =>
+      walk(child, unitName)
+    );
   }
 
   return models;
-}
-
-function hasNumberChildren(sel) {
-  if (!Array.isArray(sel.selections)) return false;
-  return sel.selections.some(
-    c => typeof c.number === "number" && c.number > 0
-  );
 }
 
 function normalizeName(name) {
