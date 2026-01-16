@@ -9,21 +9,25 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    // ENDA REGELN: om count finns → skapa modeller
-    if (typeof sel.count === "number" && sel.count > 0) {
-      const base = sel.base || "32mm";
+    // Om denna selection har child-selections med count → detta är en unit
+    if (Array.isArray(sel.selections)) {
+      sel.selections.forEach(child => {
+        if (typeof child.count === "number" && child.count > 0) {
+          const base = sel.base || "32mm";
 
-      for (let i = 0; i < sel.count; i++) {
-        models.push({
-          name: sel.name,
-          base,
-          x: null,
-          y: null
-        });
-      }
+          for (let i = 0; i < child.count; i++) {
+            models.push({
+              name: sel.name,   // parent = unit-namn
+              base,
+              x: null,
+              y: null
+            });
+          }
+        }
+      });
     }
 
-    // ALLTID gå djupare
+    // fortsätt alltid neråt
     if (Array.isArray(sel.selections)) {
       sel.selections.forEach(child => walk(child));
     }
