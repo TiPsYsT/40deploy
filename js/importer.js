@@ -9,8 +9,15 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    // 1. Om detta selection-steg HAR count → det är en unit
-    if (typeof sel.count === "number" && sel.count > 0) {
+    const hasChildren =
+      Array.isArray(sel.selections) && sel.selections.length > 0;
+
+    const isModel =
+      typeof sel.count === "number" &&
+      sel.count > 0 &&
+      !hasChildren;
+
+    if (isModel) {
       const base = sel.base || "32mm";
 
       for (let i = 0; i < sel.count; i++) {
@@ -23,8 +30,7 @@ export function importNewRecruit(json) {
       }
     }
 
-    // 2. Gå ALLTID djupare
-    if (Array.isArray(sel.selections)) {
+    if (hasChildren) {
       sel.selections.forEach(child => walk(child));
     }
   }
