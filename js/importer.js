@@ -1,3 +1,15 @@
+// Steg 2B – basstorlek från profiles + säkra standard-overrides
+// Importer ska ENDAST skapa modeller + basdata. Ingen UI-logik här.
+
+const BASE_OVERRIDES = {
+  "The Swarmlord": "60mm",
+  "Swarmlord": "60mm",
+  "Carnifex": "60mm",
+  "Carnifexes": "60mm",
+  "Ripper Swarm": "40mm",
+  "Ripper Swarms": "40mm"
+};
+
 export function importNewRecruit(json) {
   const models = [];
 
@@ -9,33 +21,45 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    if (Array.isArray(sel.selections)) {
-      sel.selections.forEach(child => {
-        if (typeof child.number === "number" && child.number > 0) {
-          const base = readBaseFromProfiles(child) || readBaseFromProfiles(sel) || "32mm";
+    if (!Array.isArray(sel.selections)) return;
 
-          for (let i = 0; i < child.number; i++) {
-            models.push({
-              name: sel.name,
-              base,       // ex: "32mm" eller "60x35"
-              x: null,
-              y: null
-            });
-          }
+    sel.selections.forEach(child => {
+      // BattleScribe använder "number" för antal
+      if (typeof child.number === "number" && child.number > 0) {
+        const unitName = normalizeName(sel.name);
+
+        const base =
+          BASE_OVERRIDES[unitName] ||
+          readBaseFromProfiles(child) ||
+          readBaseFromProfiles(sel) ||
+          "32mm";
+
+        for (let i = 0; i < child.number; i++) {
+          models.push({
+            name: unitName,
+            base,       // ex: "32mm", "40mm", "60mm", "60x35"
+            x: null,
+            y: null
+          });
         }
-      });
+      }
 
-      sel.selections.forEach(child => walk(child));
-    }
+      // fortsätt alltid neråt
+      walk(child);
+    });
   }
 
   return models;
 }
 
-/**
- * Läser basstorlek från profiles.characteristics
- * Returnerar t.ex: "32mm", "40mm", "60x35"
- */
+/* ---------------- helpers ---------------- */
+
+function normalizeName(name) {
+  return name
+    .replace(/\s*\(.*\)$/g, "") // ta bort "(x models)"
+    .trim();
+}
+
 function readBaseFromProfiles(sel) {
   if (!Array.isArray(sel.profiles)) return null;
 
@@ -45,18 +69,18 @@ function readBaseFromProfiles(sel) {
     for (const c of profile.characteristics) {
       if (!c.name) continue;
 
-      const name = c.name.toLowerCase();
-      const value = String(c.value || "").toLowerCase();
+      const key = c.name.toLowerCase();
+      const val = String(c.value || "").toLowerCase();
 
-      if (name.includes("base")) {
-        // normalisera värden
-        if (value.includes("x")) {
-          // oval
-          return value.replace("mm", "").trim();
+      if (key.includes("base")) {
+        // oval
+        if (val.includes("x")) {
+          return val.replace("mm", "").trim(); // "60x35"
         }
 
-        if (value.includes("mm")) {
-          return value.replace(" ", "");
+        // rund
+        if (val.includes("mm")) {
+          return val.replace(" ", ""); // "32mm"
         }
       }
     }
