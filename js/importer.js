@@ -2,6 +2,7 @@ import { resolveBase } from "./baseResolver.js";
 
 export function importNewRecruit(json) {
   const models = [];
+  const seen = new Set(); // 🔑 stoppar dubbletter
 
   const forces = json.roster?.forces;
   if (!forces) return models;
@@ -11,50 +12,49 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    // FALL C: HQ / Character som ligger direkt som model
+    // FALL 1: platt HQ / Swarm / Character (type:model)
     if (sel.type === "model" && typeof sel.number === "number") {
       const name = normalizeName(sel.name);
-      const base = resolveBase(name);
-      if (base) {
-        for (let i = 0; i < sel.number; i++) {
-          models.push({ name, base, x: null, y: null });
-        }
+      if (!seen.has(name)) {
+        seen.add(name);
+        spawn(name, sel.number);
       }
-      return; // ⛔ stoppa rekursion här
+      return;
     }
 
-    // FALL A + B: units (Battleline, Monster, osv)
+    // FALL 2: unit (Battleline, Monster, osv)
     if (sel.type === "unit") {
-      const unitName = normalizeName(sel.name);
-      const base = resolveBase(unitName);
-      if (!base) return;
+      const name = normalizeName(sel.name);
+      if (seen.has(name)) return;
 
       const modelChildren =
         sel.selections?.filter(
           s => s.type === "model" && typeof s.number === "number"
         ) ?? [];
 
-      // Battleline / Infantry
+      seen.add(name);
+
       if (modelChildren.length > 0) {
-        modelChildren.forEach(m => {
-          for (let i = 0; i < m.number; i++) {
-            models.push({ name: unitName, base, x: null, y: null });
-          }
-        });
-      }
-      // Monster / Vehicle / Swarm
-      else if (typeof sel.number === "number") {
-        for (let i = 0; i < sel.number; i++) {
-          models.push({ name: unitName, base, x: null, y: null });
-        }
+        const total = modelChildren.reduce((a, m) => a + m.number, 0);
+        spawn(name, total);
+      } else if (typeof sel.number === "number") {
+        spawn(name, sel.number);
       }
 
-      return; // ⛔ VIKTIGT: räkna unit EN gång
+      return;
     }
 
-    // annars: fortsätt söka
     if (!Array.isArray(sel.selections)) return;
     sel.selections.forEach(walk);
+  }
+
+  function spawn(name, count) {
+    const base = resolveBase(name);
+    if (!base) return;
+
+    for (let i = 0; i < count; i++) {
+      models.push({ name, base, x: null, y: null });
+    }
   }
 
   return models;
