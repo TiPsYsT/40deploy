@@ -13,12 +13,12 @@ export function importNewRecruit(json) {
   function walk(sel, currentUnitName) {
     let unitName = currentUnitName;
 
-    // 🟢 När vi träffar en unit → detta är SANNINGEN för namnet
+    // om detta är en unit → uppdatera unit-namn
     if (sel.type === "unit") {
       unitName = normalizeName(sel.name);
     }
 
-    // 🟢 FALL 1: horde / multi-model (model-noder)
+    // FALL 1: horde / multi-model
     if (
       sel.type === "model" &&
       typeof sel.number === "number" &&
@@ -26,33 +26,34 @@ export function importNewRecruit(json) {
       unitName
     ) {
       const base = resolveBase(unitName);
-
-      for (let i = 0; i < sel.number; i++) {
-        models.push({
-          name: unitName,
-          base,
-          x: null,
-          y: null
-        });
+      if (base) {
+        for (let i = 0; i < sel.number; i++) {
+          models.push({
+            name: unitName,
+            base,
+            x: null,
+            y: null
+          });
+        }
       }
     }
 
-    // 🟢 FALL 2: single-model unit (ingen model-child)
+    // FALL 2: single-model / unit-baserad modell
     if (
       sel.type === "unit" &&
       typeof sel.number === "number" &&
-      sel.number > 0 &&
-      !hasModelChildren(sel)
+      sel.number > 0
     ) {
       const base = resolveBase(unitName);
-
-      for (let i = 0; i < sel.number; i++) {
-        models.push({
-          name: unitName,
-          base,
-          x: null,
-          y: null
-        });
+      if (base) {
+        for (let i = 0; i < sel.number; i++) {
+          models.push({
+            name: unitName,
+            base,
+            x: null,
+            y: null
+          });
+        }
       }
     }
 
@@ -63,11 +64,6 @@ export function importNewRecruit(json) {
   }
 
   return models;
-}
-
-function hasModelChildren(sel) {
-  if (!Array.isArray(sel.selections)) return false;
-  return sel.selections.some(c => c.type === "model");
 }
 
 function normalizeName(name) {
