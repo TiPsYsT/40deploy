@@ -11,7 +11,7 @@ export function importNewRecruit(json) {
   });
 
   function walk(sel) {
-    // 🟢 FALL C: HQ / Character (direkt model)
+    // FALL C: HQ / Character som ligger direkt som model
     if (sel.type === "model" && typeof sel.number === "number") {
       const name = normalizeName(sel.name);
       const base = resolveBase(name);
@@ -20,17 +20,19 @@ export function importNewRecruit(json) {
           models.push({ name, base, x: null, y: null });
         }
       }
+      return; // ⛔ stoppa rekursion här
     }
 
-    // 🟢 FALL A + B: unit-baserade
+    // FALL A + B: units (Battleline, Monster, osv)
     if (sel.type === "unit") {
       const unitName = normalizeName(sel.name);
       const base = resolveBase(unitName);
       if (!base) return;
 
-      const modelChildren = sel.selections?.filter(
-        s => s.type === "model" && typeof s.number === "number"
-      ) ?? [];
+      const modelChildren =
+        sel.selections?.filter(
+          s => s.type === "model" && typeof s.number === "number"
+        ) ?? [];
 
       // Battleline / Infantry
       if (modelChildren.length > 0) {
@@ -40,14 +42,17 @@ export function importNewRecruit(json) {
           }
         });
       }
-      // Monster / Vehicle
+      // Monster / Vehicle / Swarm
       else if (typeof sel.number === "number") {
         for (let i = 0; i < sel.number; i++) {
           models.push({ name: unitName, base, x: null, y: null });
         }
       }
+
+      return; // ⛔ VIKTIGT: räkna unit EN gång
     }
 
+    // annars: fortsätt söka
     if (!Array.isArray(sel.selections)) return;
     sel.selections.forEach(walk);
   }
