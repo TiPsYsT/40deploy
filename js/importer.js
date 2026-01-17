@@ -7,33 +7,27 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel));
+    force.selections?.forEach(sel => handleUnit(sel));
   });
 
-  function walk(sel) {
-    if (sel.type === "unit") {
-      const unitName = normalizeName(sel.name);
-      const base = resolveBase(unitName);
-      if (!base) return;
-
-      const modelChildren = getModelChildren(sel);
-
-      // FALL A: unit med model-children (hordes)
-      if (modelChildren.length > 0) {
-        modelChildren.forEach(m => {
-          for (let i = 0; i < m.number; i++) {
-            models.push({
-              name: unitName,
-              base,
-              x: null,
-              y: null
-            });
-          }
-        });
+  function handleUnit(sel) {
+    if (sel.type !== "unit") {
+      if (Array.isArray(sel.selections)) {
+        sel.selections.forEach(handleUnit);
       }
-      // FALL B: single-model unit (inga model-children)
-      else if (typeof sel.number === "number" && sel.number > 0) {
-        for (let i = 0; i < sel.number; i++) {
+      return;
+    }
+
+    const unitName = normalizeName(sel.name);
+    const base = resolveBase(unitName);
+    if (!base) return;
+
+    // 🔑 Regel 1: giltiga model-children
+    const modelChildren = findValidModelChildren(sel, unitName);
+
+    if (modelChildren.length > 0) {
+      modelChildren.forEach(m => {
+        for (let i = 0; i < m.number; i++) {
           models.push({
             name: unitName,
             base,
@@ -41,20 +35,34 @@ export function importNewRecruit(json) {
             y: null
           });
         }
-      }
+      });
+      return;
     }
 
-    if (!Array.isArray(sel.selections)) return;
-    sel.selections.forEach(child => walk(child));
+    // 🔑 Regel 2: fallback till unit.number
+    if (typeof sel.number === "number" && sel.number > 0) {
+      for (let i = 0; i < sel.number; i++) {
+        models.push({
+          name: unitName,
+          base,
+          x: null,
+          y: null
+        });
+      }
+    }
   }
 
   return models;
 }
 
-function getModelChildren(sel) {
-  if (!Array.isArray(sel.selections)) return [];
-  return sel.selections.filter(
-    s => s.type === "model" && typeof s.number === "number" && s.number > 0
+function findValidModelChildren(unit, unitName) {
+  if (!Array.isArray(unit.selections)) return [];
+
+  return unit.selections.filter(s =>
+    s.type === "model" &&
+    typeof s.number === "number" &&
+    s.number > 0 &&
+    normalizeName(s.name).includes(unitName)
   );
 }
 
