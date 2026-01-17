@@ -1,9 +1,16 @@
-let models = [];
+export const state = {
+  board: null,
 
-export function setModels(newModels) {
-  models = newModels;
-}
+  mission: {
+    locked: false,
+    deployZones: [],
+    objectives: []
+  },
 
-export function getModels() {
-  return models;
-}
+  terrain: {
+    locked: false,
+    pieces: []
+  },
+
+  models: [] // redan befintlig
+};
