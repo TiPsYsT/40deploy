@@ -7,45 +7,32 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => walk(sel, null));
+    force.selections?.forEach(sel => walk(sel));
   });
 
-  function walk(sel, currentUnitName) {
-    let unitName = currentUnitName;
-
-    // om detta är en unit → uppdatera unit-namn
+  function walk(sel) {
     if (sel.type === "unit") {
-      unitName = normalizeName(sel.name);
-    }
-
-    // FALL 1: horde / multi-model
-    if (
-      sel.type === "model" &&
-      typeof sel.number === "number" &&
-      sel.number > 0 &&
-      unitName
-    ) {
+      const unitName = normalizeName(sel.name);
       const base = resolveBase(unitName);
-      if (base) {
-        for (let i = 0; i < sel.number; i++) {
-          models.push({
-            name: unitName,
-            base,
-            x: null,
-            y: null
-          });
-        }
+      if (!base) return;
+
+      const modelChildren = getModelChildren(sel);
+
+      // FALL A: unit med model-children (hordes)
+      if (modelChildren.length > 0) {
+        modelChildren.forEach(m => {
+          for (let i = 0; i < m.number; i++) {
+            models.push({
+              name: unitName,
+              base,
+              x: null,
+              y: null
+            });
+          }
+        });
       }
-    }
-
-    // FALL 2: single-model / unit-baserad modell
-    if (
-      sel.type === "unit" &&
-      typeof sel.number === "number" &&
-      sel.number > 0
-    ) {
-      const base = resolveBase(unitName);
-      if (base) {
+      // FALL B: single-model unit (inga model-children)
+      else if (typeof sel.number === "number" && sel.number > 0) {
         for (let i = 0; i < sel.number; i++) {
           models.push({
             name: unitName,
@@ -58,12 +45,17 @@ export function importNewRecruit(json) {
     }
 
     if (!Array.isArray(sel.selections)) return;
-    sel.selections.forEach(child =>
-      walk(child, unitName)
-    );
+    sel.selections.forEach(child => walk(child));
   }
 
   return models;
+}
+
+function getModelChildren(sel) {
+  if (!Array.isArray(sel.selections)) return [];
+  return sel.selections.filter(
+    s => s.type === "model" && typeof s.number === "number" && s.number > 0
+  );
 }
 
 function normalizeName(name) {
