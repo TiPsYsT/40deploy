@@ -7,63 +7,52 @@ export function importNewRecruit(json) {
   if (!forces) return models;
 
   forces.forEach(force => {
-    force.selections?.forEach(sel => handleUnit(sel));
+    force.selections?.forEach(sel => walk(sel));
   });
 
-  function handleUnit(sel) {
-    if (sel.type !== "unit") {
-      if (Array.isArray(sel.selections)) {
-        sel.selections.forEach(handleUnit);
-      }
-      return;
-    }
-
-    const unitName = normalizeName(sel.name);
-    const base = resolveBase(unitName);
-    if (!base) return;
-
-    // 🔑 Regel 1: giltiga model-children
-    const modelChildren = findValidModelChildren(sel, unitName);
-
-    if (modelChildren.length > 0) {
-      modelChildren.forEach(m => {
-        for (let i = 0; i < m.number; i++) {
-          models.push({
-            name: unitName,
-            base,
-            x: null,
-            y: null
-          });
+  function walk(sel) {
+    // 🟢 FALL C: HQ / Character (direkt model)
+    if (sel.type === "model" && typeof sel.number === "number") {
+      const name = normalizeName(sel.name);
+      const base = resolveBase(name);
+      if (base) {
+        for (let i = 0; i < sel.number; i++) {
+          models.push({ name, base, x: null, y: null });
         }
-      });
-      return;
+      }
     }
 
-    // 🔑 Regel 2: fallback till unit.number
-    if (typeof sel.number === "number" && sel.number > 0) {
-      for (let i = 0; i < sel.number; i++) {
-        models.push({
-          name: unitName,
-          base,
-          x: null,
-          y: null
+    // 🟢 FALL A + B: unit-baserade
+    if (sel.type === "unit") {
+      const unitName = normalizeName(sel.name);
+      const base = resolveBase(unitName);
+      if (!base) return;
+
+      const modelChildren = sel.selections?.filter(
+        s => s.type === "model" && typeof s.number === "number"
+      ) ?? [];
+
+      // Battleline / Infantry
+      if (modelChildren.length > 0) {
+        modelChildren.forEach(m => {
+          for (let i = 0; i < m.number; i++) {
+            models.push({ name: unitName, base, x: null, y: null });
+          }
         });
       }
+      // Monster / Vehicle
+      else if (typeof sel.number === "number") {
+        for (let i = 0; i < sel.number; i++) {
+          models.push({ name: unitName, base, x: null, y: null });
+        }
+      }
     }
+
+    if (!Array.isArray(sel.selections)) return;
+    sel.selections.forEach(walk);
   }
 
   return models;
-}
-
-function findValidModelChildren(unit, unitName) {
-  if (!Array.isArray(unit.selections)) return [];
-
-  return unit.selections.filter(s =>
-    s.type === "model" &&
-    typeof s.number === "number" &&
-    s.number > 0 &&
-    normalizeName(s.name).includes(unitName)
-  );
 }
 
 function normalizeName(name) {
