@@ -1,1 +1,10 @@
+{
+  "deployZones": [
+    { "xMm": 0, "yMm": 0, "wMm": 305, "hMm": 1118 },
+    { "xMm": 1219, "yMm": 0, "wMm": 305, "hMm": 1118 }
+  ],
+  "objectives": [
+    { "xMm": 762, "yMm": 559 }
+  ]
+}
 
