@@ -6,8 +6,8 @@ const ctx = canvas.getContext("2d");
 const PX_PER_MM = 1;
 
 // objective sizes
-const OBJECTIVE_R = 20;   // 40mm
-const CONTROL_R = 76;     // 3"
+const OBJECTIVE_R = 20;
+const CONTROL_R = 76;
 
 // board state
 let mission = null;
@@ -47,34 +47,29 @@ function draw() {
 
 function drawObjectives(objs) {
   objs.forEach(o => {
-    // outer black ring
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
 
-    // yellow control ring
     ctx.beginPath();
     ctx.strokeStyle = "gold";
     ctx.lineWidth = 4;
     ctx.arc(o.x, o.y, CONTROL_R - 3, 0, Math.PI * 2);
     ctx.stroke();
 
-    // black ring around objective
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.arc(o.x, o.y, OBJECTIVE_R + 2, 0, Math.PI * 2);
     ctx.stroke();
 
-    // yellow objective fill
     ctx.beginPath();
     ctx.fillStyle = "gold";
     ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
     ctx.fill();
 
-    // center dot
     ctx.beginPath();
     ctx.fillStyle = "black";
     ctx.arc(o.x, o.y, 2, 0, Math.PI * 2);
@@ -115,7 +110,9 @@ function drawTerrain(pieces) {
 
 function drawModels() {
   getModels().forEach(m => {
-    if (m.x === null) return;
+    // 🚨 KRITISK FIX: rita inte om bas saknas
+    if (m.x === null || m.base === null) return;
+
     drawBase(m);
 
     if (m.selected) {
@@ -129,6 +126,7 @@ function drawModels() {
 }
 
 function drawBase(model) {
+  // m.base är garanterat != null här
   const base = model.base.toLowerCase();
   ctx.beginPath();
 
@@ -165,7 +163,12 @@ canvas.onmousedown = e => {
 
   const hit = [...getModels()]
     .reverse()
-    .find(m => m.x !== null && Math.hypot(mx - m.x, my - m.y) < 20);
+    .find(
+      m =>
+        m.x !== null &&
+        m.base !== null &&
+        Math.hypot(mx - m.x, my - m.y) < 20
+    );
 
   if (hit) {
     if (!e.shiftKey) {
@@ -177,7 +180,6 @@ canvas.onmousedown = e => {
     dragOffsets = getModels()
       .filter(m => m.selected)
       .map(m => ({ m, dx: mx - m.x, dy: my - m.y }));
-
   } else {
     getModels().forEach(m => (m.selected = false));
     selecting = true;
@@ -210,7 +212,7 @@ canvas.onmousemove = e => {
     const y2 = Math.max(selectStart.y, selectStart.cy);
 
     getModels().forEach(m => {
-      if (m.x === null) return;
+      if (m.x === null || m.base === null) return;
       m.selected =
         m.x >= x1 && m.x <= x2 &&
         m.y >= y1 && m.y <= y2;
@@ -227,7 +229,7 @@ canvas.onmouseup = () => {
   dragOffsets = [];
 };
 
-/* ================= SIDEBAR DRAG-IN ================= */
+/* ---------- sidebar drag-in ---------- */
 
 canvas.ondragover = e => e.preventDefault();
 
@@ -236,7 +238,9 @@ canvas.ondrop = e => {
   const name = e.dataTransfer.getData("text/plain");
   if (!name) return;
 
-  const model = getModels().find(m => m.name === name && m.x === null);
+  const model = getModels().find(
+    m => m.name === name && m.x === null && m.base !== null
+  );
   if (!model) return;
 
   model.x = e.offsetX;
