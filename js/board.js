@@ -249,4 +249,20 @@ canvas.onmouseup = () => {
   selecting = false;
   selectStart = null;
   dragOffsets = [];
+
+  canvas.ondragover = e => e.preventDefault();
+
+canvas.ondrop = e => {
+  e.preventDefault();
+  const name = e.dataTransfer.getData("text/plain");
+  if (!name) return;
+
+  const model = getModels().find(m => m.name === name && m.x === null);
+  if (!model) return;
+
+  model.x = e.offsetX;
+  model.y = e.offsetY;
+  model.selected = false;
+
+  draw();
 };
