@@ -3,17 +3,13 @@ import { getModels } from "./state.js";
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const PX_PER_MM = 1;
+const OBJECTIVE_R = 20; // 40mm
+const CONTROL_R = 76;  // 3"
 
-// objective sizes
-const OBJECTIVE_R = 20;
-const CONTROL_R = 76;
-
-// board state
 let mission = null;
 let terrain = null;
 
-// interaction state
+// interaction
 let dragging = false;
 let dragOffsets = [];
 let selecting = false;
@@ -38,6 +34,7 @@ function draw() {
   }
 
   if (terrain) drawTerrain(terrain.pieces);
+
   drawModels();
 
   if (selecting && selectStart) drawSelectionBox();
@@ -110,7 +107,6 @@ function drawTerrain(pieces) {
 
 function drawModels() {
   getModels().forEach(m => {
-    // 🚨 KRITISK FIX: rita inte om bas saknas
     if (m.x === null || m.base === null) return;
 
     drawBase(m);
@@ -126,7 +122,6 @@ function drawModels() {
 }
 
 function drawBase(model) {
-  // m.base är garanterat != null här
   const base = model.base.toLowerCase();
   ctx.beginPath();
 
@@ -238,14 +233,21 @@ canvas.ondrop = e => {
   const name = e.dataTransfer.getData("text/plain");
   if (!name) return;
 
-  const model = getModels().find(
+  const unplaced = getModels().filter(
     m => m.name === name && m.x === null && m.base !== null
   );
-  if (!model) return;
+  if (unplaced.length === 0) return;
 
-  model.x = e.offsetX;
-  model.y = e.offsetY;
-  model.selected = false;
+  const PER_ROW = 5;
+  const SPACING = 35;
+
+  unplaced.forEach((m, i) => {
+    const col = i % PER_ROW;
+    const row = Math.floor(i / PER_ROW);
+    m.x = e.offsetX + col * SPACING;
+    m.y = e.offsetY + row * SPACING;
+    m.selected = false;
+  });
 
   draw();
 };
