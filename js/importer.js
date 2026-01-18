@@ -1,127 +1,76 @@
-import { getModels } from "./state.js";
+import { resolveBase } from "./baseResolver.js";
 
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
+export function importNewRecruit(json) {
+  const models = [];
+  const seen = new Set(); // stoppar dubbletter per unit-namn
 
-let dragging = null;
-let mission = null;
-let terrain = null;
+  const forces = json.roster?.forces;
+  if (!forces) return models;
 
-const PX_PER_MM = 1;
-const OBJECTIVE_R = 20; // 40mm
-
-export function initBoard(m = null, t = null) {
-  mission = m;
-  terrain = t;
-  draw();
-}
-
-export function spawnModel(unit) {
-  const unplaced = getModels().filter(m => m.name === unit.name && m.x === null);
-  if (unplaced.length === 0) return;
-
-  unplaced.forEach((m, i) => {
-    m.x = 100 + i * 25;
-    m.y = 100;
+  forces.forEach(force => {
+    force.selections?.forEach(sel => walk(sel));
   });
 
-  draw();
-}
+  function walk(sel) {
+    // FALL 1: platta models (HQ / Character / Swarm utan wrapper)
+    if (sel.type === "model" && typeof sel.number === "number") {
+      const name = normalizeName(sel.name);
+      if (!seen.has(name)) {
+        seen.add(name);
+        spawn(name, sel.number);
+      }
+      return;
+    }
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // FALL 2: units (Battleline, Monster, Vehicle, Infantry)
+    if (sel.type === "unit") {
+      const name = normalizeName(sel.name);
+      if (seen.has(name)) return;
 
-  if (mission) {
-    drawZones(mission.zones);
-    if (mission.objectives) drawObjectives(mission.objectives);
+      const modelChildren =
+        sel.selections?.filter(
+          s => s.type === "model" && typeof s.number === "number"
+        ) ?? [];
+
+      seen.add(name);
+
+      // Battleline / Infantry: antal på model-children
+      if (modelChildren.length > 0) {
+        const total = modelChildren.reduce((sum, m) => sum + m.number, 0);
+        spawn(name, total);
+      }
+      // Monster / Vehicle / single-model units: antal på unit
+      else if (typeof sel.number === "number") {
+        spawn(name, sel.number);
+      }
+
+      return;
+    }
+
+    // annars: fortsätt leta djupare
+    if (!Array.isArray(sel.selections)) return;
+    sel.selections.forEach(walk);
   }
 
-  if (terrain) drawTerrain(terrain.pieces);
-
-  drawModels();
-}
-
-/* ===== RENDER ===== */
-
-function drawZones(zones) {
-  drawPolys(zones.player, "rgba(0,0,255,0.15)");
-  drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
-}
-
-function drawPolys(polys, color) {
-  ctx.fillStyle = color;
-  ctx.strokeStyle = color;
-
-  polys.forEach(poly => {
-    ctx.beginPath();
-    poly.forEach(([x, y], i) =>
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-    );
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  });
-}
-
-function drawObjectives(objs) {
-  objs.forEach(o => {
-    ctx.beginPath();
-    ctx.fillStyle = "rgba(255,215,0,0.9)"; // GULD
-    ctx.strokeStyle = "black";
-    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.beginPath(); // mittpunkt
-    ctx.arc(o.x, o.y, 2, 0, Math.PI * 2);
-    ctx.fillStyle = "black";
-    ctx.fill();
-  });
-}
-
-function drawTerrain(pieces) {
-  ctx.fillStyle = "rgba(90,90,90,0.6)";
-  pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
-}
-
-function drawModels() {
-  getModels().forEach(m => {
-    if (m.x === null) return;
-    drawBase(m);
-  });
-}
-
-function drawBase(model) {
-  const base = model.base.toLowerCase();
-  ctx.beginPath();
-
-  if (base.includes("x")) {
-    const [w, h] = base.split("x").map(Number);
-    ctx.ellipse(model.x, model.y, w / 2, h / 2, 0, 0, Math.PI * 2);
-  } else {
-    ctx.arc(model.x, model.y, parseFloat(base) / 2, 0, Math.PI * 2);
+  function spawn(name, count) {
+    const base = resolveBase(name); // ENDA bas-källan
+    for (let i = 0; i < count; i++) {
+      models.push({
+        name,
+        base, // kan vara null
+        x: null,
+        y: null
+      });
+    }
   }
 
-  ctx.strokeStyle = "black";
-  ctx.stroke();
+  return models;
 }
 
-/* ===== DRAG ===== */
-
-canvas.onmousedown = e => {
-  const mx = e.offsetX;
-  const my = e.offsetY;
-
-  dragging = [...getModels()]
-    .reverse()
-    .find(m => m.x !== null && Math.hypot(mx - m.x, my - m.y) < 30);
-};
-
-canvas.onmousemove = e => {
-  if (!dragging) return;
-  dragging.x = e.offsetX;
-  dragging.y = e.offsetY;
-  draw();
-};
-
-canvas.onmouseup = () => dragging = null;
+function normalizeName(name) {
+  return name
+    .replace(/\s*\(.*\)$/g, "")
+    .replace(/\s*–.*$/g, "")
+    .trim()
+    .toLowerCase();
+}
