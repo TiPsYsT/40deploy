@@ -6,8 +6,8 @@ const ctx = canvas.getContext("2d");
 const PX_PER_MM = 1;
 
 // objective sizes
-const OBJECTIVE_R = 20;
-const CONTROL_R = 76;
+const OBJECTIVE_R = 20;   // 40mm
+const CONTROL_R = 76;     // 3"
 
 // board state
 let mission = null;
@@ -15,34 +15,15 @@ let terrain = null;
 
 // interaction state
 let dragging = false;
-let dragStart = null;
 let dragOffsets = [];
 let selecting = false;
 let selectStart = null;
 
-// init from app.js
+/* ================= INIT ================= */
+
 export function initBoard(m = null, t = null) {
   mission = m;
   terrain = t;
-  draw();
-}
-
-/**
- * Sidebar drag-in senare.
- * Just nu: spawn ALLA oplacerade för unit (till test / fallback)
- */
-export function spawnModel(unit) {
-  const unplaced = getModels().filter(
-    m => m.name === unit.name && m.x === null
-  );
-  if (!unplaced.length) return;
-
-  unplaced.forEach((m, i) => {
-    m.x = 120 + i * 35;
-    m.y = 120;
-    m.selected = false;
-  });
-
   draw();
 }
 
@@ -57,7 +38,6 @@ function draw() {
   }
 
   if (terrain) drawTerrain(terrain.pieces);
-
   drawModels();
 
   if (selecting && selectStart) drawSelectionBox();
@@ -67,28 +47,28 @@ function draw() {
 
 function drawObjectives(objs) {
   objs.forEach(o => {
-    // outer black
+    // outer black ring
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
 
-    // yellow control
+    // yellow control ring
     ctx.beginPath();
     ctx.strokeStyle = "gold";
     ctx.lineWidth = 4;
     ctx.arc(o.x, o.y, CONTROL_R - 3, 0, Math.PI * 2);
     ctx.stroke();
 
-    // black ring
+    // black ring around objective
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.arc(o.x, o.y, OBJECTIVE_R + 2, 0, Math.PI * 2);
     ctx.stroke();
 
-    // yellow fill
+    // yellow objective fill
     ctx.beginPath();
     ctx.fillStyle = "gold";
     ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
@@ -136,7 +116,6 @@ function drawTerrain(pieces) {
 function drawModels() {
   getModels().forEach(m => {
     if (m.x === null) return;
-
     drawBase(m);
 
     if (m.selected) {
@@ -189,20 +168,17 @@ canvas.onmousedown = e => {
     .find(m => m.x !== null && Math.hypot(mx - m.x, my - m.y) < 20);
 
   if (hit) {
-    // selection
     if (!e.shiftKey) {
       getModels().forEach(m => (m.selected = false));
     }
     hit.selected = true;
 
-    // start drag
     dragging = true;
     dragOffsets = getModels()
       .filter(m => m.selected)
       .map(m => ({ m, dx: mx - m.x, dy: my - m.y }));
 
   } else {
-    // box select
     getModels().forEach(m => (m.selected = false));
     selecting = true;
     selectStart = { x: mx, y: my, cx: mx, cy: my };
@@ -249,8 +225,11 @@ canvas.onmouseup = () => {
   selecting = false;
   selectStart = null;
   dragOffsets = [];
+};
 
-  canvas.ondragover = e => e.preventDefault();
+/* ================= SIDEBAR DRAG-IN ================= */
+
+canvas.ondragover = e => e.preventDefault();
 
 canvas.ondrop = e => {
   e.preventDefault();
