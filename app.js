@@ -1,7 +1,7 @@
 import { setModels } from "./js/state.js";
 import { importNewRecruit } from "./js/importer.js";
 import { renderSidebar } from "./js/sidebar.js";
-import { redrawBoard, spawnModel } from "./js/board.js";
+import { initBoard, spawnModel } from "./js/board.js";
 import { loadBases } from "./js/baseResolver.js";
 import { loadMission } from "./js/missionLoader.js";
 import { loadTerrain } from "./js/terrainLoader.js";
@@ -15,6 +15,7 @@ let currentTerrain = null;
 
 (async function init() {
   await loadBases();
+  initBoard(); // init med tom state
 })();
 
 fileInput.addEventListener("change", e => {
@@ -27,7 +28,6 @@ fileInput.addEventListener("change", e => {
 
     setModels(models);
     renderSidebar(spawnModel);
-    redrawBoard(currentMission, currentTerrain);
   };
 
   reader.readAsText(file);
@@ -38,7 +38,7 @@ missionSelect.addEventListener("change", async e => {
     ? await loadMission(e.target.value)
     : null;
 
-  redrawBoard(currentMission, currentTerrain);
+  initBoard(currentMission, currentTerrain);
 });
 
 terrainSelect.addEventListener("change", async e => {
@@ -46,5 +46,5 @@ terrainSelect.addEventListener("change", async e => {
     ? await loadTerrain(e.target.value)
     : null;
 
-  redrawBoard(currentMission, currentTerrain);
+  initBoard(currentMission, currentTerrain);
 });
