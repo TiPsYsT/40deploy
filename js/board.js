@@ -3,34 +3,50 @@ import { getModels } from "./state.js";
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-let dragging = null;
+const PX_PER_MM = 1;
+
+// objective sizes
+const OBJECTIVE_R = 20;
+const CONTROL_R = 76;
+
+// board state
 let mission = null;
 let terrain = null;
 
-const PX_PER_MM = 1;
+// interaction state
+let dragging = false;
+let dragStart = null;
+let dragOffsets = [];
+let selecting = false;
+let selectStart = null;
 
-// Objective sizes
-const OBJECTIVE_R = 20;   // 40mm
-const CONTROL_R = 76;     // 3"
-
+// init from app.js
 export function initBoard(m = null, t = null) {
   mission = m;
   terrain = t;
   draw();
 }
 
+/**
+ * Sidebar drag-in senare.
+ * Just nu: spawn ALLA oplacerade för unit (till test / fallback)
+ */
 export function spawnModel(unit) {
-  // hitta FÖRSTA oplacerade modellen med samma namn
-  const model = getModels().find(
+  const unplaced = getModels().filter(
     m => m.name === unit.name && m.x === null
   );
-  if (!model) return;
+  if (!unplaced.length) return;
 
-  model.x = 120;
-  model.y = 120;
+  unplaced.forEach((m, i) => {
+    m.x = 120 + i * 35;
+    m.y = 120;
+    m.selected = false;
+  });
 
   draw();
 }
+
+/* ================= DRAW ================= */
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -41,42 +57,44 @@ function draw() {
   }
 
   if (terrain) drawTerrain(terrain.pieces);
+
   drawModels();
+
+  if (selecting && selectStart) drawSelectionBox();
 }
 
-/* ===== OBJECTIVES ===== */
+/* ---------- objectives ---------- */
 
 function drawObjectives(objs) {
   objs.forEach(o => {
-
-    // yttersta svarta ringen (control)
+    // outer black
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
 
-    // gul control-ring
+    // yellow control
     ctx.beginPath();
     ctx.strokeStyle = "gold";
     ctx.lineWidth = 4;
     ctx.arc(o.x, o.y, CONTROL_R - 3, 0, Math.PI * 2);
     ctx.stroke();
 
-    // svart ring runt objektet
+    // black ring
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.arc(o.x, o.y, OBJECTIVE_R + 2, 0, Math.PI * 2);
     ctx.stroke();
 
-    // gul objekt-fyllning
+    // yellow fill
     ctx.beginPath();
     ctx.fillStyle = "gold";
     ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
     ctx.fill();
 
-    // svart mittpunkt
+    // center dot
     ctx.beginPath();
     ctx.fillStyle = "black";
     ctx.arc(o.x, o.y, 2, 0, Math.PI * 2);
@@ -84,7 +102,7 @@ function drawObjectives(objs) {
   });
 }
 
-/* ===== ZONES ===== */
+/* ---------- zones ---------- */
 
 function drawZones(zones) {
   drawPolys(zones.player, "rgba(0,0,255,0.15)");
@@ -106,19 +124,28 @@ function drawPolys(polys, color) {
   });
 }
 
-/* ===== TERRAIN ===== */
+/* ---------- terrain ---------- */
 
 function drawTerrain(pieces) {
   ctx.fillStyle = "rgba(90,90,90,0.6)";
   pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 }
 
-/* ===== MODELS ===== */
+/* ---------- models ---------- */
 
 function drawModels() {
   getModels().forEach(m => {
     if (m.x === null) return;
+
     drawBase(m);
+
+    if (m.selected) {
+      ctx.beginPath();
+      ctx.strokeStyle = "blue";
+      ctx.lineWidth = 2;
+      ctx.arc(m.x, m.y, 18, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   });
 }
 
@@ -137,22 +164,89 @@ function drawBase(model) {
   ctx.stroke();
 }
 
-/* ===== DRAG ===== */
+/* ---------- selection box ---------- */
+
+function drawSelectionBox() {
+  const x = Math.min(selectStart.x, selectStart.cx);
+  const y = Math.min(selectStart.y, selectStart.cy);
+  const w = Math.abs(selectStart.cx - selectStart.x);
+  const h = Math.abs(selectStart.cy - selectStart.y);
+
+  ctx.strokeStyle = "blue";
+  ctx.setLineDash([5, 5]);
+  ctx.strokeRect(x, y, w, h);
+  ctx.setLineDash([]);
+}
+
+/* ================= INTERACTION ================= */
 
 canvas.onmousedown = e => {
   const mx = e.offsetX;
   const my = e.offsetY;
 
-  dragging = [...getModels()]
+  const hit = [...getModels()]
     .reverse()
-    .find(m => m.x !== null && Math.hypot(mx - m.x, my - m.y) < 30);
-};
+    .find(m => m.x !== null && Math.hypot(mx - m.x, my - m.y) < 20);
 
-canvas.onmousemove = e => {
-  if (!dragging) return;
-  dragging.x = e.offsetX;
-  dragging.y = e.offsetY;
+  if (hit) {
+    // selection
+    if (!e.shiftKey) {
+      getModels().forEach(m => (m.selected = false));
+    }
+    hit.selected = true;
+
+    // start drag
+    dragging = true;
+    dragOffsets = getModels()
+      .filter(m => m.selected)
+      .map(m => ({ m, dx: mx - m.x, dy: my - m.y }));
+
+  } else {
+    // box select
+    getModels().forEach(m => (m.selected = false));
+    selecting = true;
+    selectStart = { x: mx, y: my, cx: mx, cy: my };
+  }
+
   draw();
 };
 
-canvas.onmouseup = () => dragging = null;
+canvas.onmousemove = e => {
+  const mx = e.offsetX;
+  const my = e.offsetY;
+
+  if (dragging) {
+    dragOffsets.forEach(o => {
+      o.m.x = mx - o.dx;
+      o.m.y = my - o.dy;
+    });
+    draw();
+    return;
+  }
+
+  if (selecting && selectStart) {
+    selectStart.cx = mx;
+    selectStart.cy = my;
+
+    const x1 = Math.min(selectStart.x, selectStart.cx);
+    const y1 = Math.min(selectStart.y, selectStart.cy);
+    const x2 = Math.max(selectStart.x, selectStart.cx);
+    const y2 = Math.max(selectStart.y, selectStart.cy);
+
+    getModels().forEach(m => {
+      if (m.x === null) return;
+      m.selected =
+        m.x >= x1 && m.x <= x2 &&
+        m.y >= y1 && m.y <= y2;
+    });
+
+    draw();
+  }
+};
+
+canvas.onmouseup = () => {
+  dragging = false;
+  selecting = false;
+  selectStart = null;
+  dragOffsets = [];
+};
