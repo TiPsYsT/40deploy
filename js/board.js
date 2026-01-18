@@ -8,7 +8,10 @@ let mission = null;
 let terrain = null;
 
 const PX_PER_MM = 1;
-const OBJECTIVE_R = 20; // 40mm
+
+// Objective sizes
+const OBJECTIVE_R = 20;   // 40mm
+const CONTROL_R = 76;     // 3"
 
 export function initBoard(m = null, t = null) {
   mission = m;
@@ -17,13 +20,14 @@ export function initBoard(m = null, t = null) {
 }
 
 export function spawnModel(unit) {
-  const unplaced = getModels().filter(m => m.name === unit.name && m.x === null);
-  if (unplaced.length === 0) return;
+  // hitta FÖRSTA oplacerade modellen med samma namn
+  const model = getModels().find(
+    m => m.name === unit.name && m.x === null
+  );
+  if (!model) return;
 
-  unplaced.forEach((m, i) => {
-    m.x = 100 + i * 25;
-    m.y = 100;
-  });
+  model.x = 120;
+  model.y = 120;
 
   draw();
 }
@@ -37,11 +41,50 @@ function draw() {
   }
 
   if (terrain) drawTerrain(terrain.pieces);
-
   drawModels();
 }
 
-/* ===== RENDER ===== */
+/* ===== OBJECTIVES ===== */
+
+function drawObjectives(objs) {
+  objs.forEach(o => {
+
+    // yttersta svarta ringen (control)
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // gul control-ring
+    ctx.beginPath();
+    ctx.strokeStyle = "gold";
+    ctx.lineWidth = 4;
+    ctx.arc(o.x, o.y, CONTROL_R - 3, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // svart ring runt objektet
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.arc(o.x, o.y, OBJECTIVE_R + 2, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // gul objekt-fyllning
+    ctx.beginPath();
+    ctx.fillStyle = "gold";
+    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
+    ctx.fill();
+
+    // svart mittpunkt
+    ctx.beginPath();
+    ctx.fillStyle = "black";
+    ctx.arc(o.x, o.y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+/* ===== ZONES ===== */
 
 function drawZones(zones) {
   drawPolys(zones.player, "rgba(0,0,255,0.15)");
@@ -63,26 +106,14 @@ function drawPolys(polys, color) {
   });
 }
 
-function drawObjectives(objs) {
-  objs.forEach(o => {
-    ctx.beginPath();
-    ctx.fillStyle = "rgba(255,215,0,0.9)"; // GULD
-    ctx.strokeStyle = "black";
-    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.beginPath(); // mittpunkt
-    ctx.arc(o.x, o.y, 2, 0, Math.PI * 2);
-    ctx.fillStyle = "black";
-    ctx.fill();
-  });
-}
+/* ===== TERRAIN ===== */
 
 function drawTerrain(pieces) {
   ctx.fillStyle = "rgba(90,90,90,0.6)";
   pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 }
+
+/* ===== MODELS ===== */
 
 function drawModels() {
   getModels().forEach(m => {
