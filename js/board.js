@@ -136,8 +136,6 @@ function drawBase(model) {
   ctx.stroke();
 }
 
-/* ---------- helpers ---------- */
-
 function getHitRadius(model) {
   const base = model.base.toLowerCase();
   if (base.includes("x")) {
@@ -169,23 +167,28 @@ canvas.onmousedown = e => {
 
   const hit = [...getModels()]
     .reverse()
-    .find(m =>
-      m.x !== null &&
-      m.base !== null &&
-      Math.hypot(mx - m.x, my - m.y) <= getHitRadius(m)
+    .find(
+      m =>
+        m.x !== null &&
+        m.base !== null &&
+        Math.hypot(mx - m.x, my - m.y) <= getHitRadius(m)
     );
 
   if (hit) {
-    if (!e.shiftKey) {
-      getModels().forEach(m => (m.selected = false));
+    // 🔥 FIX: klick på redan selected → behåll selection
+    if (!hit.selected) {
+      if (!e.shiftKey) {
+        getModels().forEach(m => (m.selected = false));
+      }
+      hit.selected = true;
     }
-    hit.selected = true;
 
     dragging = true;
     dragOffsets = getModels()
       .filter(m => m.selected)
       .map(m => ({ m, dx: mx - m.x, dy: my - m.y }));
   } else {
+    // tom yta → box select
     getModels().forEach(m => (m.selected = false));
     selecting = true;
     selectStart = { x: mx, y: my, cx: mx, cy: my };
