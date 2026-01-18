@@ -5,30 +5,28 @@ const ctx = canvas.getContext("2d");
 
 let dragging = null;
 const PX_PER_MM = 1;
+const OBJECTIVE_R = 20; // 40mm diameter
 
 export function spawnModel(unit) {
   const model = getModels().find(m => m.name === unit.name && m.x === null);
   if (!model) return;
 
-  model.x = 40;
-  model.y = 40;
+  model.x = 100;
+  model.y = 100;
   redrawBoard();
 }
 
 export function redrawBoard(mission = null, terrain = null) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (mission) drawZones(mission.zones);
+  if (mission) {
+    drawZones(mission.zones);
+    if (mission.objectives) drawObjectives(mission.objectives);
+  }
+
   if (terrain) drawTerrain(terrain.pieces);
 
   drawModels();
-}
-
-function drawModels() {
-  getModels().forEach(m => {
-    if (m.x === null) return;
-    drawBase(m);
-  });
 }
 
 function drawZones(zones) {
@@ -51,10 +49,29 @@ function drawPolys(polys, color) {
   });
 }
 
+function drawObjectives(objs) {
+  ctx.strokeStyle = "black";
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+
+  objs.forEach(o => {
+    ctx.beginPath();
+    ctx.arc(o.x, o.y, OBJECTIVE_R * PX_PER_MM, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  });
+}
+
 function drawTerrain(pieces) {
   ctx.fillStyle = "rgba(100,100,100,0.5)";
   pieces.forEach(p => {
     ctx.fillRect(p.x, p.y, p.w, p.h);
+  });
+}
+
+function drawModels() {
+  getModels().forEach(m => {
+    if (m.x === null) return;
+    drawBase(m);
   });
 }
 
@@ -73,14 +90,17 @@ function drawBase(model) {
   ctx.stroke();
 }
 
-/* drag */
+/* ===== FIXAD DRAG ===== */
 canvas.onmousedown = e => {
-  getModels().forEach(m => {
-    if (m.x === null) return;
-    if (Math.hypot(e.offsetX - m.x, e.offsetY - m.y) < 30) {
-      dragging = m;
-    }
-  });
+  const mx = e.offsetX;
+  const my = e.offsetY;
+
+  dragging = [...getModels()]
+    .reverse() // översta först
+    .find(m => {
+      if (m.x === null) return false;
+      return Math.hypot(mx - m.x, my - m.y) < 30;
+    });
 };
 
 canvas.onmousemove = e => {
