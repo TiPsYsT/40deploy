@@ -1,24 +1,34 @@
-import { state } from "./js/state.js";
-import { setBoard } from "./js/board.js";
-import { loadMission } from "./js/mission.js";
-import { loadTerrain } from "./js/terrain.js";
-import { render } from "./js/render.js";
+import { setModels } from "./js/state.js";
+import { importNewRecruit } from "./js/importer.js";
+import { renderSidebar } from "./js/sidebar.js";
+import { draw, spawnModel } from "./js/board.js";
+import { loadBases } from "./js/baseResolver.js";
 
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext("2d");
+console.log("APP STARTAR");
 
-// board
-state.board = setBoard({
-  widthMm: 1524,
-  heightMm: 1118,
-  pxPerMm: 3.78
+const fileInput = document.getElementById("fileInput");
+
+(async function init() {
+  await loadBases();
+  console.log("BASES LADDADE");
+})();
+
+fileInput.addEventListener("change", e => {
+  console.log("FIL VALD");
+
+  const file = e.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = e => {
+    console.log("FILE READ OK");
+
+    const json = JSON.parse(e.target.result);
+    const models = importNewRecruit(json);
+
+    setModels(models);
+    renderSidebar(spawnModel);
+    draw();
+  };
+
+  reader.readAsText(file);
 });
-
-canvas.width  = state.board.widthMm  * state.board.pxPerMm;
-canvas.height = state.board.heightMm * state.board.pxPerMm;
-
-// load mission + terrain (sen via UI)
-loadMission(await fetch("data/missions/take_and_hold.json").then(r => r.json()), state);
-loadTerrain(await fetch("data/terrain/wtc_2024.json").then(r => r.json()), state);
-
-render(ctx, state);
