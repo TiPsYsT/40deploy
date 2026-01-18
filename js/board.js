@@ -3,9 +3,10 @@ import { getModels } from "./state.js";
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const OBJECTIVE_R = 20;
-const CONTROL_R = 76;
+const OBJECTIVE_R = 20; // 40mm
+const CONTROL_R = 76;  // 3"
 
+// board state
 let mission = null;
 let terrain = null;
 
@@ -14,6 +15,11 @@ let dragging = false;
 let dragOffsets = [];
 let selecting = false;
 let selectStart = null;
+
+// ruler
+let rulerActive = false;
+let rulerStart = null;
+let rulerEnd = null;
 
 /* ================= INIT ================= */
 
@@ -38,6 +44,7 @@ function draw() {
   drawModels();
 
   if (selecting && selectStart) drawSelectionBox();
+  if (rulerActive && rulerStart && rulerEnd) drawRuler();
 }
 
 /* ---------- objectives ---------- */
@@ -159,11 +166,56 @@ function drawSelectionBox() {
   ctx.setLineDash([]);
 }
 
+/* ---------- ruler ---------- */
+
+function drawRuler() {
+  const dx = rulerEnd.x - rulerStart.x;
+  const dy = rulerEnd.y - rulerStart.y;
+  const distMM = Math.hypot(dx, dy);
+  const distIn = distMM / 25.4;
+
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 2;
+  ctx.moveTo(rulerStart.x, rulerStart.y);
+  ctx.lineTo(rulerEnd.x, rulerEnd.y);
+  ctx.stroke();
+
+  const label = `${distMM.toFixed(1)} mm / ${distIn.toFixed(2)}"`;
+  ctx.fillStyle = "white";
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 3;
+
+  ctx.font = "14px sans-serif";
+  ctx.strokeText(label, rulerEnd.x + 6, rulerEnd.y - 6);
+  ctx.fillText(label, rulerEnd.x + 6, rulerEnd.y - 6);
+}
+
 /* ================= INTERACTION ================= */
+
+window.addEventListener("keydown", e => {
+  if (e.key.toLowerCase() === "r") rulerActive = true;
+});
+
+window.addEventListener("keyup", e => {
+  if (e.key.toLowerCase() === "r") {
+    rulerActive = false;
+    rulerStart = null;
+    rulerEnd = null;
+    draw();
+  }
+});
 
 canvas.onmousedown = e => {
   const mx = e.offsetX;
   const my = e.offsetY;
+
+  if (rulerActive) {
+    rulerStart = { x: mx, y: my };
+    rulerEnd = { x: mx, y: my };
+    draw();
+    return;
+  }
 
   const hit = [...getModels()]
     .reverse()
@@ -175,11 +227,8 @@ canvas.onmousedown = e => {
     );
 
   if (hit) {
-    // 🔥 FIX: klick på redan selected → behåll selection
     if (!hit.selected) {
-      if (!e.shiftKey) {
-        getModels().forEach(m => (m.selected = false));
-      }
+      getModels().forEach(m => (m.selected = false));
       hit.selected = true;
     }
 
@@ -188,7 +237,6 @@ canvas.onmousedown = e => {
       .filter(m => m.selected)
       .map(m => ({ m, dx: mx - m.x, dy: my - m.y }));
   } else {
-    // tom yta → box select
     getModels().forEach(m => (m.selected = false));
     selecting = true;
     selectStart = { x: mx, y: my, cx: mx, cy: my };
@@ -200,6 +248,12 @@ canvas.onmousedown = e => {
 canvas.onmousemove = e => {
   const mx = e.offsetX;
   const my = e.offsetY;
+
+  if (rulerActive && rulerStart) {
+    rulerEnd = { x: mx, y: my };
+    draw();
+    return;
+  }
 
   if (dragging) {
     dragOffsets.forEach(o => {
