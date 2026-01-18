@@ -3,8 +3,8 @@ import { getModels } from "./state.js";
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const OBJECTIVE_R = 20; // 40mm
-const CONTROL_R = 76;  // 3"
+const OBJECTIVE_R = 20;
+const CONTROL_R = 76;
 
 let mission = null;
 let terrain = null;
@@ -115,7 +115,7 @@ function drawModels() {
       ctx.beginPath();
       ctx.strokeStyle = "blue";
       ctx.lineWidth = 2;
-      ctx.arc(m.x, m.y, 18, 0, Math.PI * 2);
+      ctx.arc(m.x, m.y, getHitRadius(m) + 4, 0, Math.PI * 2);
       ctx.stroke();
     }
   });
@@ -134,6 +134,17 @@ function drawBase(model) {
 
   ctx.strokeStyle = "black";
   ctx.stroke();
+}
+
+/* ---------- helpers ---------- */
+
+function getHitRadius(model) {
+  const base = model.base.toLowerCase();
+  if (base.includes("x")) {
+    const [w, h] = base.split("x").map(Number);
+    return Math.max(w, h) / 2 + 4;
+  }
+  return parseFloat(base) / 2 + 4;
 }
 
 /* ---------- selection box ---------- */
@@ -158,11 +169,10 @@ canvas.onmousedown = e => {
 
   const hit = [...getModels()]
     .reverse()
-    .find(
-      m =>
-        m.x !== null &&
-        m.base !== null &&
-        Math.hypot(mx - m.x, my - m.y) < 20
+    .find(m =>
+      m.x !== null &&
+      m.base !== null &&
+      Math.hypot(mx - m.x, my - m.y) <= getHitRadius(m)
     );
 
   if (hit) {
@@ -236,7 +246,7 @@ canvas.ondrop = e => {
   const unplaced = getModels().filter(
     m => m.name === name && m.x === null && m.base !== null
   );
-  if (unplaced.length === 0) return;
+  if (!unplaced.length) return;
 
   const PER_ROW = 5;
   const SPACING = 35;
