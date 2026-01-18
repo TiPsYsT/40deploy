@@ -4,6 +4,13 @@ body {
   padding: 0;
 }
 
+#topbar {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  gap: 8px;
+}
+
 #container {
   display: flex;
   align-items: flex-start;
