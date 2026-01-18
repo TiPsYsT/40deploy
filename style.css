@@ -1,15 +1,19 @@
 body {
   font-family: sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 #container {
   display: flex;
+  align-items: flex-start;
 }
 
 #sidebar {
   width: 250px;
   border-right: 1px solid #ccc;
   padding: 8px;
+  box-sizing: border-box;
 }
 
 .unit {
@@ -17,6 +21,12 @@ body {
   padding: 4px;
 }
 
-canvas {
+.unit:hover {
+  background: #eee;
+}
+
+#board {
   border: 1px solid black;
+  transform: scale(0.6);
+  transform-origin: top left;
 }
