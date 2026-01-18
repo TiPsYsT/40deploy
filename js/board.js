@@ -4,8 +4,7 @@ const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
 let dragging = null;
-
-const PX_PER_MM = 1; // justerar vi i steg 2C
+const PX_PER_MM = 1;
 
 export function spawnModel(unit) {
   const model = getModels().find(m => m.name === unit.name && m.x === null);
@@ -13,55 +12,72 @@ export function spawnModel(unit) {
 
   model.x = 40;
   model.y = 40;
-  draw();
+  redrawBoard();
 }
 
-export function draw() {
+export function redrawBoard(mission = null, terrain = null) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  if (mission) drawZones(mission.zones);
+  if (terrain) drawTerrain(terrain.pieces);
+
+  drawModels();
+}
+
+function drawModels() {
   getModels().forEach(m => {
     if (m.x === null) return;
-
     drawBase(m);
+  });
+}
+
+function drawZones(zones) {
+  drawPolys(zones.player, "rgba(0,0,255,0.15)");
+  drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
+}
+
+function drawPolys(polys, color) {
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+
+  polys.forEach(poly => {
+    ctx.beginPath();
+    poly.forEach(([x, y], i) => {
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  });
+}
+
+function drawTerrain(pieces) {
+  ctx.fillStyle = "rgba(100,100,100,0.5)";
+  pieces.forEach(p => {
+    ctx.fillRect(p.x, p.y, p.w, p.h);
   });
 }
 
 function drawBase(model) {
   const base = model.base.toLowerCase();
-
   ctx.beginPath();
 
   if (base.includes("x")) {
-    // oval: ex "60x35"
-    const [w, h] = base.split("x").map(v => parseFloat(v));
-    ctx.ellipse(
-      model.x,
-      model.y,
-      (w / 2) * PX_PER_MM,
-      (h / 2) * PX_PER_MM,
-      0,
-      0,
-      Math.PI * 2
-    );
+    const [w, h] = base.split("x").map(Number);
+    ctx.ellipse(model.x, model.y, w / 2, h / 2, 0, 0, Math.PI * 2);
   } else {
-    // rund bas: ex "32mm"
-    const mm = parseFloat(base);
-    const r = (mm / 2) * PX_PER_MM;
+    const r = parseFloat(base) / 2;
     ctx.arc(model.x, model.y, r, 0, Math.PI * 2);
   }
 
   ctx.stroke();
 }
 
-/* Drag & drop */
+/* drag */
 canvas.onmousedown = e => {
   getModels().forEach(m => {
     if (m.x === null) return;
-
-    const dx = e.offsetX - m.x;
-    const dy = e.offsetY - m.y;
-
-    if (Math.hypot(dx, dy) < 30) {
+    if (Math.hypot(e.offsetX - m.x, e.offsetY - m.y) < 30) {
       dragging = m;
     }
   });
@@ -69,12 +85,9 @@ canvas.onmousedown = e => {
 
 canvas.onmousemove = e => {
   if (!dragging) return;
-
   dragging.x = e.offsetX;
   dragging.y = e.offsetY;
-  draw();
+  redrawBoard();
 };
 
-canvas.onmouseup = () => {
-  dragging = null;
-};
+canvas.onmouseup = () => dragging = null;
