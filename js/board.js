@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 
 let dragging = null;
 
-const PX_PER_MM = 2; // justerar vi i steg 2C
+const PX_PER_MM = 1; // justerar vi i steg 2C
 
 export function spawnModel(unit) {
   const model = getModels().find(m => m.name === unit.name && m.x === null);
