@@ -1,7 +1,7 @@
 import { setModels } from "./js/state.js";
 import { importNewRecruit } from "./js/importer.js";
 import { renderSidebar } from "./js/sidebar.js";
-import { initBoard, spawnModel } from "./js/board.js";
+import { initBoard } from "./js/board.js";
 import { loadBases } from "./js/baseResolver.js";
 import { loadMission } from "./js/missionLoader.js";
 import { loadTerrain } from "./js/terrainLoader.js";
@@ -15,7 +15,7 @@ let currentTerrain = null;
 
 (async function init() {
   await loadBases();
-  initBoard(); // init med tom state
+  initBoard(); // tomt bräde initialt
 })();
 
 fileInput.addEventListener("change", e => {
@@ -27,7 +27,7 @@ fileInput.addEventListener("change", e => {
     const models = importNewRecruit(json);
 
     setModels(models);
-    renderSidebar(spawnModel);
+    renderSidebar(); // sidebar bygger dragbara baser
   };
 
   reader.readAsText(file);
