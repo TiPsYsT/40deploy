@@ -88,24 +88,33 @@ function drawObjectives(objs = []) {
 
 function drawTerrain(pieces) {
   pieces.forEach(p => {
-    // footprint
+
+    // ---- FOOTPRINT COLORS (EXAKT SOM BILDEN) ----
     if (p.type === "ruin") {
-      ctx.fillStyle = "rgba(80,80,80,0.35)";
-    } else if (p.type === "container") {
-      ctx.fillStyle = "rgba(120,120,120,0.6)";
-    } else {
-      ctx.fillStyle = "rgba(160,160,160,0.4)";
+      if (p.color === "teal") {
+        ctx.fillStyle = "rgba(90,190,200,0.55)";
+      } else if (p.color === "orange") {
+        ctx.fillStyle = "rgba(220,120,80,0.55)";
+      } else {
+        ctx.fillStyle = "rgba(160,160,160,0.45)";
+      }
+      ctx.fillRect(p.x, p.y, p.w, p.h);
     }
 
-    ctx.fillRect(p.x, p.y, p.w, p.h);
+    // ---- CONTAINERS ----
+    if (p.type === "container") {
+      ctx.fillStyle = "#c9d3dd";
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+    }
 
-    ctx.strokeStyle = "black";
+    // ---- OUTLINE ----
+    ctx.strokeStyle = p.type === "container" ? "#7a8694" : "black";
     ctx.lineWidth = 2;
     ctx.strokeRect(p.x, p.y, p.w, p.h);
 
-    // walls
+    // ---- WALLS ----
     if (Array.isArray(p.walls)) {
-      ctx.strokeStyle = "black";
+      ctx.strokeStyle = "#6f6f6f";
       ctx.lineWidth = p.wall || 3;
 
       p.walls.forEach(w => {
