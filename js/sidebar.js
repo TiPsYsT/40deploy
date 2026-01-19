@@ -2,7 +2,11 @@ import { getModels } from "./state.js";
 
 export function renderSidebar() {
   const sidebar = document.getElementById("sidebar");
+
+  // behåll help-texten
+  const help = sidebar.querySelector(".help");
   sidebar.innerHTML = "";
+  sidebar.appendChild(help);
 
   const groups = {};
 
@@ -20,18 +24,21 @@ export function renderSidebar() {
 
     const header = document.createElement("div");
     header.style.fontWeight = "bold";
-    header.style.marginTop = "8px";
     header.textContent =
-      remaining > 1
-        ? `${cap(name)} (${remaining})`
-        : cap(name);
-
+      remaining > 1 ? `${cap(name)} (${remaining})` : cap(name);
     sidebar.appendChild(header);
 
     const proxy = document.createElement("div");
     proxy.className = "unit";
-    proxy.textContent = cap(name);
     proxy.draggable = true;
+
+    const colorDot = document.createElement("div");
+    colorDot.className = "color-dot";
+    colorDot.style.background =
+      models.find(m => m.color)?.color ?? "#999";
+
+    proxy.appendChild(colorDot);
+    proxy.appendChild(document.createTextNode(cap(name)));
 
     proxy.ondragstart = e => {
       e.dataTransfer.setData("text/plain", name);
