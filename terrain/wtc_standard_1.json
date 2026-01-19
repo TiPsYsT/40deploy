@@ -1,110 +1,135 @@
-{
-  "pieces": [
+// wtc_standard_1.js
+// Dawn of War – WTC
+// Används direkt av initBoard(mission, terrain)
+
+const wtc_standard_1 = {
+  pieces: [
+
+    // TOP LEFT – small grey
     {
-      "type": "ruin",
-      "x": 90,
-      "y": 80,
-      "w": 140,
-      "h": 60,
-      "walls": [
+      type: "ruin",
+      x: 90,
+      y: 80,
+      w: 140,
+      h: 60,
+      walls: [
         [[0, 0], [140, 0]],
         [[0, 0], [0, 60]]
       ]
     },
+
+    // TOP MID LEFT – orange
     {
-      "type": "ruin",
-      "color": "orange",
-      "x": 360,
-      "y": 80,
-      "w": 240,
-      "h": 120,
-      "walls": [
+      type: "ruin",
+      color: "orange",
+      x: 360,
+      y: 80,
+      w: 240,
+      h: 120,
+      walls: [
         [[0, 0], [240, 0]],
         [[0, 0], [0, 120]]
       ]
     },
+
+    // TOP MID RIGHT – orange (speglad)
     {
-      "type": "ruin",
-      "color": "orange",
-      "x": 660,
-      "y": 80,
-      "w": 240,
-      "h": 120,
-      "walls": [
+      type: "ruin",
+      color: "orange",
+      x: 660,
+      y: 80,
+      w: 240,
+      h: 120,
+      walls: [
         [[240, 0], [240, 120]],
         [[0, 0], [240, 0]]
       ]
     },
+
+    // MID LEFT – blue
     {
-      "type": "ruin",
-      "color": "teal",
-      "x": 120,
-      "y": 280,
-      "w": 220,
-      "h": 160,
-      "walls": [
+      type: "ruin",
+      color: "teal",
+      x: 120,
+      y: 280,
+      w: 220,
+      h: 160,
+      walls: [
         [[40, 80], [180, 80]],
         [[140, 0], [140, 140]]
       ]
     },
+
+    // MID CENTER – blue
     {
-      "type": "ruin",
-      "color": "teal",
-      "x": 420,
-      "y": 300,
-      "w": 260,
-      "h": 140,
-      "walls": [
+      type: "ruin",
+      color: "teal",
+      x: 420,
+      y: 300,
+      w: 260,
+      h: 140,
+      walls: [
         [[0, 0], [200, 0]],
         [[0, 0], [0, 140]]
       ]
     },
+
+    // MID RIGHT – blue (speglad)
     {
-      "type": "ruin",
-      "color": "teal",
-      "x": 740,
-      "y": 280,
-      "w": 220,
-      "h": 160,
-      "walls": [
+      type: "ruin",
+      color: "teal",
+      x: 740,
+      y: 280,
+      w: 220,
+      h: 160,
+      walls: [
         [[80, 80], [220, 80]],
         [[80, 0], [80, 140]]
       ]
     },
+
+    // BOTTOM LEFT – orange
     {
-      "type": "ruin",
-      "color": "orange",
-      "x": 180,
-      "y": 520,
-      "w": 260,
-      "h": 120,
-      "walls": [
+      type: "ruin",
+      color: "orange",
+      x: 180,
+      y: 520,
+      w: 260,
+      h: 120,
+      walls: [
         [[0, 0], [200, 0]],
         [[200, 0], [200, 120]]
       ]
     },
+
+    // BOTTOM CENTER – orange
     {
-      "type": "ruin",
-      "color": "orange",
-      "x": 480,
-      "y": 520,
-      "w": 260,
-      "h": 120,
-      "walls": [
+      type: "ruin",
+      color: "orange",
+      x: 480,
+      y: 520,
+      w: 260,
+      h: 120,
+      walls: [
         [[0, 0], [200, 0]],
         [[200, 0], [200, 120]]
       ]
     },
+
+    // BOTTOM RIGHT – small grey
     {
-      "type": "ruin",
-      "x": 820,
-      "y": 540,
-      "w": 140,
-      "h": 60,
-      "walls": [
+      type: "ruin",
+      x: 820,
+      y: 540,
+      w: 140,
+      h: 60,
+      walls: [
         [[0, 0], [140, 0]],
         [[140, 0], [140, 60]]
       ]
     }
   ]
-}
+};
+
+// gör den global så app.js kan använda den
+window.wtc_standard_1 = wtc_standard_1;
