@@ -1,4 +1,1 @@
-export async function loadTerrain(id) {
-  const res = await fetch(`terrain/${id}.json`);
-  return res.json();
-}
+return fetch(`terrain/${id}.json`).then(r => r.json());
