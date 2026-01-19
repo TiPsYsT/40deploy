@@ -6,7 +6,6 @@ const ctx = canvas.getContext("2d");
 const OBJECTIVE_R = 20; // 40mm
 const CONTROL_R = 76;  // 3"
 
-// board state
 let mission = null;
 let terrain = null;
 
@@ -171,24 +170,24 @@ function drawSelectionBox() {
 function drawRuler() {
   const dx = rulerEnd.x - rulerStart.x;
   const dy = rulerEnd.y - rulerStart.y;
-  const distMM = Math.hypot(dx, dy);
-  const distIn = distMM / 25.4;
+  const inches = Math.hypot(dx, dy) / 25.4;
 
   ctx.beginPath();
   ctx.strokeStyle = "black";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.moveTo(rulerStart.x, rulerStart.y);
   ctx.lineTo(rulerEnd.x, rulerEnd.y);
   ctx.stroke();
 
-  const label = `${distMM.toFixed(1)} mm / ${distIn.toFixed(2)}"`;
-  ctx.fillStyle = "white";
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = 3;
+  const label = `${inches.toFixed(1)}"`;
 
-  ctx.font = "14px sans-serif";
-  ctx.strokeText(label, rulerEnd.x + 6, rulerEnd.y - 6);
-  ctx.fillText(label, rulerEnd.x + 6, rulerEnd.y - 6);
+  ctx.font = "bold 20px sans-serif";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "black";
+  ctx.fillStyle = "white";
+
+  ctx.strokeText(label, rulerEnd.x + 8, rulerEnd.y - 8);
+  ctx.fillText(label, rulerEnd.x + 8, rulerEnd.y - 8);
 }
 
 /* ================= INTERACTION ================= */
