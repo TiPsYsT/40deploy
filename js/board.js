@@ -22,31 +22,12 @@ let rulerActive = false;
 let rulerStart = null;
 let rulerEnd = null;
 
-// unit colors
-const COLORS = [
-  "#e6194b","#3cb44b","#ffe119","#4363d8",
-  "#f58231","#911eb4","#46f0f0","#f032e6",
-  "#bcf60c","#fabebe","#008080","#e6beff"
-];
-let colorIndex = 0;
-
 /* ================= INIT ================= */
 
 export function initBoard(m = null, t = null) {
   mission = m;
   terrain = t;
-  assignUnitColors();
   draw();
-}
-
-function assignUnitColors() {
-  const map = new Map();
-  getModels().forEach(m => {
-    if (!map.has(m.name)) {
-      map.set(m.name, COLORS[colorIndex++ % COLORS.length]);
-    }
-    m.color = map.get(m.name);
-  });
 }
 
 /* ================= DRAW ================= */
@@ -78,8 +59,8 @@ function drawPolys(polys, color) {
   ctx.fillStyle = color;
   polys.forEach(poly => {
     ctx.beginPath();
-    poly.forEach(([x,y], i) =>
-      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y)
+    poly.forEach(([x, y], i) =>
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
     );
     ctx.closePath();
     ctx.fill();
@@ -103,7 +84,7 @@ function drawObjectives(objs = []) {
   });
 }
 
-/* ---------- terrain ---------- */
+/* ---------- terrain (FOOTPRINT + WALLS) ---------- */
 
 function drawTerrain(pieces) {
   pieces.forEach(p => {
@@ -137,28 +118,27 @@ function drawTerrain(pieces) {
   });
 }
 
-
 /* ---------- models + bubbles ---------- */
 
 function drawModels() {
   getModels().forEach(m => {
     if (m.x === null || m.base === null) return;
 
-    // bubbles: transparent fill + black outline
-if (Array.isArray(m.bubbles)) {
-  m.bubbles.forEach(r => {
-    ctx.beginPath();
-    ctx.fillStyle = hexToRgba(m.color, 0.25); // genomskinlig
-    ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
-    ctx.fill();
+    // bubbles (transparent fill + black edge)
+    if (Array.isArray(m.bubbles)) {
+      m.bubbles.forEach(r => {
+        ctx.beginPath();
+        ctx.fillStyle = hexToRgba(m.color, 0.25);
+        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
+        ctx.fill();
 
-    ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
-    ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
-    ctx.stroke();
-  });
-}
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+    }
 
     drawBase(m);
 
@@ -198,11 +178,11 @@ function getHitRadius(m) {
   return parseFloat(base) / 2 + 4;
 }
 
-function hexToRgba(hex, alpha) {
+function hexToRgba(hex, a) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
+  return `rgba(${r},${g},${b},${a})`;
 }
 
 /* ---------- selection ---------- */
@@ -214,7 +194,7 @@ function drawSelectionBox() {
   const h = Math.abs(selectStart.cy - selectStart.y);
 
   ctx.strokeStyle = "blue";
-  ctx.setLineDash([5,5]);
+  ctx.setLineDash([5, 5]);
   ctx.strokeRect(x, y, w, h);
   ctx.setLineDash([]);
 }
