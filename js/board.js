@@ -3,8 +3,12 @@ import { getModels } from "./state.js";
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const OBJECTIVE_R = 20; // 40mm
-const CONTROL_R = 76;  // 3"
+// inches → mm
+const INCH = 25.4;
+
+// objective sizes
+const OBJECTIVE_R = 20;
+const CONTROL_R = 76;
 
 let mission = null;
 let terrain = null;
@@ -109,11 +113,22 @@ function drawTerrain(pieces) {
   pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 }
 
-/* ---------- models ---------- */
+/* ---------- models + bubbles ---------- */
 
 function drawModels() {
   getModels().forEach(m => {
     if (m.x === null || m.base === null) return;
+
+    // bubbles
+    if (Array.isArray(m.bubbles)) {
+      m.bubbles.forEach(r => {
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0,0,0,0.6)";
+        ctx.lineWidth = 1.5;
+        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+    }
 
     drawBase(m);
 
@@ -170,7 +185,7 @@ function drawSelectionBox() {
 function drawRuler() {
   const dx = rulerEnd.x - rulerStart.x;
   const dy = rulerEnd.y - rulerStart.y;
-  const inches = Math.hypot(dx, dy) / 25.4;
+  const inches = Math.hypot(dx, dy) / INCH;
 
   ctx.beginPath();
   ctx.strokeStyle = "black";
@@ -181,7 +196,7 @@ function drawRuler() {
 
   const label = `${inches.toFixed(1)}"`;
 
-  ctx.font = "bold 20px sans-serif";
+  ctx.font = "bold 22px sans-serif";
   ctx.lineWidth = 4;
   ctx.strokeStyle = "black";
   ctx.fillStyle = "white";
@@ -193,7 +208,41 @@ function drawRuler() {
 /* ================= INTERACTION ================= */
 
 window.addEventListener("keydown", e => {
-  if (e.key.toLowerCase() === "r") rulerActive = true;
+  const key = e.key;
+
+  // ruler
+  if (key.toLowerCase() === "r") {
+    rulerActive = true;
+    return;
+  }
+
+  // bubbles
+  const bubbleMap = {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "6": 6,
+    "9": 9,
+    "0": 12
+  };
+
+  if (bubbleMap[key]) {
+    getModels().forEach(m => {
+      if (m.selected) {
+        if (!Array.isArray(m.bubbles)) m.bubbles = [];
+        if (!m.bubbles.includes(bubbleMap[key])) {
+          m.bubbles.push(bubbleMap[key]);
+        }
+      }
+    });
+    draw();
+  }
+
+  // clear bubbles
+  if (key.toLowerCase() === "c") {
+    getModels().forEach(m => (m.bubbles = []));
+    draw();
+  }
 });
 
 window.addEventListener("keyup", e => {
