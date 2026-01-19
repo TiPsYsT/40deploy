@@ -13,7 +13,10 @@ export function renderSidebar() {
   });
 
   Object.entries(groups).forEach(([name, models]) => {
-    const remaining = models.filter(m => m.x === null && m.base !== null).length;
+    const remaining = models.filter(
+      m => m.x === null && m.base !== null
+    ).length;
+
     if (!remaining) return;
 
     const header = document.createElement("div");
