@@ -7,7 +7,7 @@ const INCH = 25.4;
 const OBJECTIVE_R = 20;
 const CONTROL_R = 76;
 
-// mission / terrain
+// state
 let mission = null;
 let terrain = null;
 
@@ -40,12 +40,12 @@ export function initBoard(m = null, t = null) {
 }
 
 function assignUnitColors() {
-  const seen = new Map();
+  const map = new Map();
   getModels().forEach(m => {
-    if (!seen.has(m.name)) {
-      seen.set(m.name, COLORS[colorIndex++ % COLORS.length]);
+    if (!map.has(m.name)) {
+      map.set(m.name, COLORS[colorIndex++ % COLORS.length]);
     }
-    m.color = seen.get(m.name);
+    m.color = map.get(m.name);
   });
 }
 
@@ -92,13 +92,13 @@ function drawObjectives(objs = []) {
   objs.forEach(o => {
     ctx.beginPath();
     ctx.fillStyle = "gold";
-    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI*2);
+    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI*2);
+    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
   });
 }
@@ -110,19 +110,25 @@ function drawTerrain(pieces) {
   pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 }
 
-/* ---------- models ---------- */
+/* ---------- models + bubbles ---------- */
 
 function drawModels() {
   getModels().forEach(m => {
     if (m.x === null || m.base === null) return;
 
-    // solid bubbles
+    // bubbles: transparent fill + black outline
     if (Array.isArray(m.bubbles)) {
       m.bubbles.forEach(r => {
         ctx.beginPath();
-        ctx.fillStyle = m.color;
-        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI*2);
+        ctx.fillStyle = hexToRgba(m.color, 0.25);
+        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
         ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
+        ctx.stroke();
       });
     }
 
@@ -132,7 +138,7 @@ function drawModels() {
       ctx.beginPath();
       ctx.strokeStyle = "blue";
       ctx.lineWidth = 2;
-      ctx.arc(m.x, m.y, getHitRadius(m)+4, 0, Math.PI*2);
+      ctx.arc(m.x, m.y, getHitRadius(m) + 4, 0, Math.PI * 2);
       ctx.stroke();
     }
   });
@@ -143,10 +149,10 @@ function drawBase(m) {
   ctx.beginPath();
 
   if (base.includes("x")) {
-    const [w,h] = base.split("x").map(Number);
-    ctx.ellipse(m.x, m.y, w/2, h/2, 0, 0, Math.PI*2);
+    const [w, h] = base.split("x").map(Number);
+    ctx.ellipse(m.x, m.y, w / 2, h / 2, 0, 0, Math.PI * 2);
   } else {
-    ctx.arc(m.x, m.y, parseFloat(base)/2, 0, Math.PI*2);
+    ctx.arc(m.x, m.y, parseFloat(base) / 2, 0, Math.PI * 2);
   }
 
   ctx.fillStyle = m.color;
@@ -158,10 +164,17 @@ function drawBase(m) {
 function getHitRadius(m) {
   const base = m.base.toLowerCase();
   if (base.includes("x")) {
-    const [w,h] = base.split("x").map(Number);
-    return Math.max(w,h)/2 + 4;
+    const [w, h] = base.split("x").map(Number);
+    return Math.max(w, h) / 2 + 4;
   }
-  return parseFloat(base)/2 + 4;
+  return parseFloat(base) / 2 + 4;
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 /* ---------- selection ---------- */
@@ -174,7 +187,7 @@ function drawSelectionBox() {
 
   ctx.strokeStyle = "blue";
   ctx.setLineDash([5,5]);
-  ctx.strokeRect(x,y,w,h);
+  ctx.strokeRect(x, y, w, h);
   ctx.setLineDash([]);
 }
 
@@ -195,8 +208,8 @@ function drawRuler() {
   ctx.stroke();
 
   ctx.font = "bold 22px sans-serif";
-  ctx.strokeText(`${inches.toFixed(1)}"`, rulerEnd.x+8, rulerEnd.y-8);
-  ctx.fillText(`${inches.toFixed(1)}"`, rulerEnd.x+8, rulerEnd.y-8);
+  ctx.strokeText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
+  ctx.fillText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
 }
 
 /* ---------- input ---------- */
@@ -235,7 +248,7 @@ window.addEventListener("keyup", e => {
 
 canvas.onmousedown = e => {
   if (rulerActive) {
-    rulerStart = rulerEnd = { x:e.offsetX, y:e.offsetY };
+    rulerStart = rulerEnd = { x: e.offsetX, y: e.offsetY };
     draw();
     return;
   }
@@ -243,23 +256,32 @@ canvas.onmousedown = e => {
   const hit = [...getModels()].reverse().find(
     m =>
       m.x !== null &&
-      Math.hypot(e.offsetX-m.x, e.offsetY-m.y) <= getHitRadius(m)
+      Math.hypot(e.offsetX - m.x, e.offsetY - m.y) <= getHitRadius(m)
   );
 
   if (hit) {
     if (!hit.selected) {
-      getModels().forEach(m => (m.selected=false));
+      getModels().forEach(m => (m.selected = false));
       hit.selected = true;
     }
 
     dragging = true;
     dragOffsets = getModels()
-      .filter(m=>m.selected)
-      .map(m=>({ m, dx:e.offsetX-m.x, dy:e.offsetY-m.y }));
+      .filter(m => m.selected)
+      .map(m => ({
+        m,
+        dx: e.offsetX - m.x,
+        dy: e.offsetY - m.y
+      }));
   } else {
-    getModels().forEach(m => (m.selected=false));
+    getModels().forEach(m => (m.selected = false));
     selecting = true;
-    selectStart = { x:e.offsetX, y:e.offsetY, cx:e.offsetX, cy:e.offsetY };
+    selectStart = {
+      x: e.offsetX,
+      y: e.offsetY,
+      cx: e.offsetX,
+      cy: e.offsetY
+    };
   }
 
   draw();
@@ -267,13 +289,13 @@ canvas.onmousedown = e => {
 
 canvas.onmousemove = e => {
   if (rulerActive && rulerStart) {
-    rulerEnd = { x:e.offsetX, y:e.offsetY };
+    rulerEnd = { x: e.offsetX, y: e.offsetY };
     draw();
     return;
   }
 
   if (dragging) {
-    dragOffsets.forEach(o=>{
+    dragOffsets.forEach(o => {
       o.m.x = e.offsetX - o.dx;
       o.m.y = e.offsetY - o.dy;
     });
@@ -289,9 +311,11 @@ canvas.onmousemove = e => {
     const x2 = Math.max(selectStart.x, selectStart.cx);
     const y2 = Math.max(selectStart.y, selectStart.cy);
 
-    getModels().forEach(m=>{
+    getModels().forEach(m => {
       if (m.x === null) return;
-      m.selected = m.x>=x1 && m.x<=x2 && m.y>=y1 && m.y<=y2;
+      m.selected =
+        m.x >= x1 && m.x <= x2 &&
+        m.y >= y1 && m.y <= y2;
     });
     draw();
   }
@@ -320,9 +344,9 @@ canvas.ondrop = e => {
   const PER_ROW = 5;
   const SPACING = 35;
 
-  unplaced.forEach((m,i)=>{
-    m.x = e.offsetX + (i%PER_ROW)*SPACING;
-    m.y = e.offsetY + Math.floor(i/PER_ROW)*SPACING;
+  unplaced.forEach((m, i) => {
+    m.x = e.offsetX + (i % PER_ROW) * SPACING;
+    m.y = e.offsetY + Math.floor(i / PER_ROW) * SPACING;
   });
 
   draw();
