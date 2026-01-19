@@ -84,12 +84,20 @@ function drawObjectives(objs = []) {
   });
 }
 
-/* ---------- terrain (FOOTPRINT + WALLS) ---------- */
+/* ---------- terrain (ROTATION FIXAD) ---------- */
 
 function drawTerrain(pieces) {
   pieces.forEach(p => {
+    const cx = p.x + p.w / 2;
+    const cy = p.y + p.h / 2;
+    const rot = (p.rotation || 0) * Math.PI / 180;
 
-    // ---- FOOTPRINT COLORS (EXAKT SOM BILDEN) ----
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(rot);
+    ctx.translate(-p.w / 2, -p.h / 2);
+
+    // FOOTPRINT
     if (p.type === "ruin") {
       if (p.color === "teal") {
         ctx.fillStyle = "rgba(90,190,200,0.55)";
@@ -98,32 +106,33 @@ function drawTerrain(pieces) {
       } else {
         ctx.fillStyle = "rgba(160,160,160,0.45)";
       }
-      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.fillRect(0, 0, p.w, p.h);
     }
 
-    // ---- CONTAINERS ----
     if (p.type === "container") {
       ctx.fillStyle = "#c9d3dd";
-      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.fillRect(0, 0, p.w, p.h);
     }
 
-    // ---- OUTLINE ----
+    // OUTLINE
     ctx.strokeStyle = p.type === "container" ? "#7a8694" : "black";
     ctx.lineWidth = 2;
-    ctx.strokeRect(p.x, p.y, p.w, p.h);
+    ctx.strokeRect(0, 0, p.w, p.h);
 
-    // ---- WALLS ----
+    // WALLS (roteras automatiskt)
     if (Array.isArray(p.walls)) {
       ctx.strokeStyle = "#6f6f6f";
       ctx.lineWidth = p.wall || 3;
 
       p.walls.forEach(w => {
         ctx.beginPath();
-        ctx.moveTo(p.x + w[0][0], p.y + w[0][1]);
-        ctx.lineTo(p.x + w[1][0], p.y + w[1][1]);
+        ctx.moveTo(w[0][0], w[0][1]);
+        ctx.lineTo(w[1][0], w[1][1]);
         ctx.stroke();
       });
     }
+
+    ctx.restore();
   });
 }
 
@@ -133,7 +142,6 @@ function drawModels() {
   getModels().forEach(m => {
     if (m.x === null || m.base === null) return;
 
-    // bubbles (transparent fill + black edge)
     if (Array.isArray(m.bubbles)) {
       m.bubbles.forEach(r => {
         ctx.beginPath();
