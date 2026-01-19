@@ -1,7 +1,5 @@
 {
   "pieces": [
-
-    /* ---------- TOP SMALL GREY ---------- */
     {
       "type": "ruin",
       "x": 127,
@@ -13,8 +11,6 @@
         [[0, 0], [0, 76]]
       ]
     },
-
-    /* ---------- TOP ORANGE LEFT ---------- */
     {
       "type": "ruin",
       "color": "orange",
@@ -27,8 +23,6 @@
         [[0, 0], [0, 152]]
       ]
     },
-
-    /* ---------- TOP ORANGE RIGHT ---------- */
     {
       "type": "ruin",
       "color": "orange",
@@ -41,8 +35,6 @@
         [[0, 0], [305, 0]]
       ]
     },
-
-    /* ---------- MID BLUE LEFT (L) ---------- */
     {
       "type": "ruin",
       "color": "teal",
@@ -55,8 +47,6 @@
         [[203, 0], [203, 178]]
       ]
     },
-
-    /* ---------- MID BLUE CENTER ---------- */
     {
       "type": "ruin",
       "color": "teal",
@@ -69,8 +59,6 @@
         [[0, 0], [0, 178]]
       ]
     },
-
-    /* ---------- MID BLUE RIGHT (L) ---------- */
     {
       "type": "ruin",
       "color": "teal",
@@ -83,8 +71,6 @@
         [[25, 0], [25, 178]]
       ]
     },
-
-    /* ---------- BOTTOM ORANGE LEFT ---------- */
     {
       "type": "ruin",
       "color": "orange",
@@ -97,8 +83,6 @@
         [[279, 0], [279, 152]]
       ]
     },
-
-    /* ---------- BOTTOM ORANGE CENTER ---------- */
     {
       "type": "ruin",
       "color": "orange",
@@ -111,8 +95,6 @@
         [[279, 0], [279, 152]]
       ]
     },
-
-    /* ---------- BOTTOM SMALL GREY ---------- */
     {
       "type": "ruin",
       "x": 1041,
