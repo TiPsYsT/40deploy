@@ -15,7 +15,7 @@ let currentTerrain = null;
 
 (async function init() {
   await loadBases();
-  initBoard(); // tomt bräde initialt
+  initBoard();
 })();
 
 fileInput.addEventListener("change", e => {
@@ -26,8 +26,9 @@ fileInput.addEventListener("change", e => {
     const json = JSON.parse(e.target.result);
     const models = importNewRecruit(json);
 
-    setModels(models);
-    renderSidebar(); // sidebar bygger dragbara baser
+    setModels(models);      // ✅ färger sätts här
+    renderSidebar();        // ✅ sidebar ser färger
+    initBoard(currentMission, currentTerrain);
   };
 
   reader.readAsText(file);
