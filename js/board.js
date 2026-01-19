@@ -3,12 +3,7 @@ import { getModels } from "./state.js";
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-// inches → mm
 const INCH = 25.4;
-
-// objective sizes
-const OBJECTIVE_R = 20;
-const CONTROL_R = 76;
 
 let mission = null;
 let terrain = null;
@@ -24,7 +19,13 @@ let rulerActive = false;
 let rulerStart = null;
 let rulerEnd = null;
 
-/* ================= INIT ================= */
+// färger (roterar automatiskt)
+const COLORS = [
+  "#e6194b", "#3cb44b", "#ffe119", "#4363d8",
+  "#f58231", "#911eb4", "#46f0f0", "#f032e6",
+  "#bcf60c", "#fabebe", "#008080", "#e6beff"
+];
+let colorIndex = 0;
 
 export function initBoard(m = null, t = null) {
   mission = m;
@@ -32,88 +33,28 @@ export function initBoard(m = null, t = null) {
   draw();
 }
 
+function getUnitColor(name) {
+  const existing = getModels().find(m => m.name === name && m.color);
+  if (existing) return existing.color;
+
+  const color = COLORS[colorIndex++ % COLORS.length];
+  getModels().forEach(m => {
+    if (m.name === name) m.color = color;
+  });
+  return color;
+}
+
 /* ================= DRAW ================= */
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (mission) {
-    drawZones(mission.zones);
-    if (mission.objectives) drawObjectives(mission.objectives);
-  }
-
   if (terrain) drawTerrain(terrain.pieces);
-
   drawModels();
 
   if (selecting && selectStart) drawSelectionBox();
   if (rulerActive && rulerStart && rulerEnd) drawRuler();
 }
-
-/* ---------- objectives ---------- */
-
-function drawObjectives(objs) {
-  objs.forEach(o => {
-    ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
-    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.strokeStyle = "gold";
-    ctx.lineWidth = 4;
-    ctx.arc(o.x, o.y, CONTROL_R - 3, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
-    ctx.arc(o.x, o.y, OBJECTIVE_R + 2, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.fillStyle = "gold";
-    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.fillStyle = "black";
-    ctx.arc(o.x, o.y, 2, 0, Math.PI * 2);
-    ctx.fill();
-  });
-}
-
-/* ---------- zones ---------- */
-
-function drawZones(zones) {
-  drawPolys(zones.player, "rgba(0,0,255,0.15)");
-  drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
-}
-
-function drawPolys(polys, color) {
-  ctx.fillStyle = color;
-  ctx.strokeStyle = color;
-
-  polys.forEach(poly => {
-    ctx.beginPath();
-    poly.forEach(([x, y], i) =>
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-    );
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  });
-}
-
-/* ---------- terrain ---------- */
-
-function drawTerrain(pieces) {
-  ctx.fillStyle = "rgba(90,90,90,0.6)";
-  pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
-}
-
-/* ---------- models + bubbles ---------- */
 
 function drawModels() {
   getModels().forEach(m => {
@@ -123,123 +64,70 @@ function drawModels() {
     if (Array.isArray(m.bubbles)) {
       m.bubbles.forEach(r => {
         ctx.beginPath();
-        ctx.strokeStyle = "rgba(0,0,0,0.6)";
-        ctx.lineWidth = 1.5;
+        ctx.fillStyle = m.color + "33";
         ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.fill();
       });
     }
 
     drawBase(m);
-
-    if (m.selected) {
-      ctx.beginPath();
-      ctx.strokeStyle = "blue";
-      ctx.lineWidth = 2;
-      ctx.arc(m.x, m.y, getHitRadius(m) + 4, 0, Math.PI * 2);
-      ctx.stroke();
-    }
   });
 }
 
-function drawBase(model) {
-  const base = model.base.toLowerCase();
+function drawBase(m) {
+  const base = m.base.toLowerCase();
   ctx.beginPath();
 
   if (base.includes("x")) {
     const [w, h] = base.split("x").map(Number);
-    ctx.ellipse(model.x, model.y, w / 2, h / 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(m.x, m.y, w / 2, h / 2, 0, 0, Math.PI * 2);
   } else {
-    ctx.arc(model.x, model.y, parseFloat(base) / 2, 0, Math.PI * 2);
+    ctx.arc(m.x, m.y, parseFloat(base) / 2, 0, Math.PI * 2);
   }
 
   ctx.strokeStyle = "black";
   ctx.stroke();
 }
 
-function getHitRadius(model) {
-  const base = model.base.toLowerCase();
-  if (base.includes("x")) {
-    const [w, h] = base.split("x").map(Number);
-    return Math.max(w, h) / 2 + 4;
-  }
-  return parseFloat(base) / 2 + 4;
-}
-
-/* ---------- selection box ---------- */
-
-function drawSelectionBox() {
-  const x = Math.min(selectStart.x, selectStart.cx);
-  const y = Math.min(selectStart.y, selectStart.cy);
-  const w = Math.abs(selectStart.cx - selectStart.x);
-  const h = Math.abs(selectStart.cy - selectStart.y);
-
-  ctx.strokeStyle = "blue";
-  ctx.setLineDash([5, 5]);
-  ctx.strokeRect(x, y, w, h);
-  ctx.setLineDash([]);
-}
-
-/* ---------- ruler ---------- */
+/* ================= RULER ================= */
 
 function drawRuler() {
-  const dx = rulerEnd.x - rulerStart.x;
-  const dy = rulerEnd.y - rulerStart.y;
-  const inches = Math.hypot(dx, dy) / INCH;
+  const inches = Math.hypot(
+    rulerEnd.x - rulerStart.x,
+    rulerEnd.y - rulerStart.y
+  ) / INCH;
 
   ctx.beginPath();
-  ctx.strokeStyle = "black";
   ctx.lineWidth = 3;
+  ctx.strokeStyle = "black";
   ctx.moveTo(rulerStart.x, rulerStart.y);
   ctx.lineTo(rulerEnd.x, rulerEnd.y);
   ctx.stroke();
 
-  const label = `${inches.toFixed(1)}"`;
-
   ctx.font = "bold 22px sans-serif";
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = "black";
-  ctx.fillStyle = "white";
-
-  ctx.strokeText(label, rulerEnd.x + 8, rulerEnd.y - 8);
-  ctx.fillText(label, rulerEnd.x + 8, rulerEnd.y - 8);
+  ctx.strokeText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
+  ctx.fillText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
 }
 
-/* ================= INTERACTION ================= */
+/* ================= INPUT ================= */
 
 window.addEventListener("keydown", e => {
-  const key = e.key;
+  if (e.key.toLowerCase() === "r") rulerActive = true;
 
-  // ruler
-  if (key.toLowerCase() === "r") {
-    rulerActive = true;
-    return;
-  }
-
-  // bubbles
-  const bubbleMap = {
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "6": 6,
-    "9": 9,
-    "0": 12
-  };
-
-  if (bubbleMap[key]) {
+  const map = { "1":1, "2":2, "3":3, "6":6, "9":9, "0":12 };
+  if (map[e.key]) {
     getModels().forEach(m => {
       if (m.selected) {
-        if (!Array.isArray(m.bubbles)) m.bubbles = [];
-        if (!m.bubbles.includes(bubbleMap[key])) {
-          m.bubbles.push(bubbleMap[key]);
+        if (!m.bubbles) m.bubbles = [];
+        if (!m.bubbles.includes(map[e.key])) {
+          m.bubbles.push(map[e.key]);
         }
       }
     });
     draw();
   }
 
-  // clear bubbles
-  if (key.toLowerCase() === "c") {
+  if (e.key.toLowerCase() === "c") {
     getModels().forEach(m => (m.bubbles = []));
     draw();
   }
@@ -248,98 +136,40 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   if (e.key.toLowerCase() === "r") {
     rulerActive = false;
-    rulerStart = null;
-    rulerEnd = null;
+    rulerStart = rulerEnd = null;
     draw();
   }
 });
 
 canvas.onmousedown = e => {
-  const mx = e.offsetX;
-  const my = e.offsetY;
-
   if (rulerActive) {
-    rulerStart = { x: mx, y: my };
-    rulerEnd = { x: mx, y: my };
-    draw();
+    rulerStart = rulerEnd = { x: e.offsetX, y: e.offsetY };
     return;
   }
 
-  const hit = [...getModels()]
-    .reverse()
-    .find(
-      m =>
-        m.x !== null &&
-        m.base !== null &&
-        Math.hypot(mx - m.x, my - m.y) <= getHitRadius(m)
-    );
-
-  if (hit) {
-    if (!hit.selected) {
-      getModels().forEach(m => (m.selected = false));
-      hit.selected = true;
-    }
-
-    dragging = true;
-    dragOffsets = getModels()
-      .filter(m => m.selected)
-      .map(m => ({ m, dx: mx - m.x, dy: my - m.y }));
-  } else {
-    getModels().forEach(m => (m.selected = false));
-    selecting = true;
-    selectStart = { x: mx, y: my, cx: mx, cy: my };
-  }
-
-  draw();
+  selecting = true;
+  selectStart = { x: e.offsetX, y: e.offsetY, cx: e.offsetX, cy: e.offsetY };
 };
 
 canvas.onmousemove = e => {
-  const mx = e.offsetX;
-  const my = e.offsetY;
-
   if (rulerActive && rulerStart) {
-    rulerEnd = { x: mx, y: my };
+    rulerEnd = { x: e.offsetX, y: e.offsetY };
     draw();
-    return;
   }
 
-  if (dragging) {
-    dragOffsets.forEach(o => {
-      o.m.x = mx - o.dx;
-      o.m.y = my - o.dy;
-    });
-    draw();
-    return;
-  }
-
-  if (selecting && selectStart) {
-    selectStart.cx = mx;
-    selectStart.cy = my;
-
-    const x1 = Math.min(selectStart.x, selectStart.cx);
-    const y1 = Math.min(selectStart.y, selectStart.cy);
-    const x2 = Math.max(selectStart.x, selectStart.cx);
-    const y2 = Math.max(selectStart.y, selectStart.cy);
-
-    getModels().forEach(m => {
-      if (m.x === null || m.base === null) return;
-      m.selected =
-        m.x >= x1 && m.x <= x2 &&
-        m.y >= y1 && m.y <= y2;
-    });
-
+  if (selecting) {
+    selectStart.cx = e.offsetX;
+    selectStart.cy = e.offsetY;
     draw();
   }
 };
 
 canvas.onmouseup = () => {
-  dragging = false;
   selecting = false;
   selectStart = null;
-  dragOffsets = [];
 };
 
-/* ---------- sidebar drag-in ---------- */
+/* ================= SIDEBAR DROP ================= */
 
 canvas.ondragover = e => e.preventDefault();
 
@@ -348,20 +178,19 @@ canvas.ondrop = e => {
   const name = e.dataTransfer.getData("text/plain");
   if (!name) return;
 
+  const color = getUnitColor(name);
+
   const unplaced = getModels().filter(
     m => m.name === name && m.x === null && m.base !== null
   );
-  if (!unplaced.length) return;
 
   const PER_ROW = 5;
   const SPACING = 35;
 
   unplaced.forEach((m, i) => {
-    const col = i % PER_ROW;
-    const row = Math.floor(i / PER_ROW);
-    m.x = e.offsetX + col * SPACING;
-    m.y = e.offsetY + row * SPACING;
-    m.selected = false;
+    m.x = e.offsetX + (i % PER_ROW) * SPACING;
+    m.y = e.offsetY + Math.floor(i / PER_ROW) * SPACING;
+    m.color = color;
   });
 
   draw();
