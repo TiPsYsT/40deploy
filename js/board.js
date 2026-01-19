@@ -106,9 +106,37 @@ function drawObjectives(objs = []) {
 /* ---------- terrain ---------- */
 
 function drawTerrain(pieces) {
-  ctx.fillStyle = "rgba(80,80,80,0.7)";
-  pieces.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+  pieces.forEach(p => {
+    // footprint
+    if (p.type === "ruin") {
+      ctx.fillStyle = "rgba(80,80,80,0.35)";
+    } else if (p.type === "container") {
+      ctx.fillStyle = "rgba(120,120,120,0.6)";
+    } else {
+      ctx.fillStyle = "rgba(160,160,160,0.4)";
+    }
+
+    ctx.fillRect(p.x, p.y, p.w, p.h);
+
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(p.x, p.y, p.w, p.h);
+
+    // walls
+    if (Array.isArray(p.walls)) {
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = p.wall || 3;
+
+      p.walls.forEach(w => {
+        ctx.beginPath();
+        ctx.moveTo(p.x + w[0][0], p.y + w[0][1]);
+        ctx.lineTo(p.x + w[1][0], p.y + w[1][1]);
+        ctx.stroke();
+      });
+    }
+  });
 }
+
 
 /* ---------- models + bubbles ---------- */
 
