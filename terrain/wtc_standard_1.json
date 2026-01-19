@@ -5,7 +5,6 @@
 const terrain = {
   pieces: [
 
-    // ───── TOP LEFT – SMALL GREY ─────
     {
       type: "ruin",
       x: 90, y: 80,
@@ -16,7 +15,6 @@ const terrain = {
       ]
     },
 
-    // ───── TOP MID LEFT – ORANGE ─────
     {
       type: "ruin",
       color: "orange",
@@ -28,7 +26,6 @@ const terrain = {
       ]
     },
 
-    // ───── TOP MID RIGHT – ORANGE (SPEGLAD) ─────
     {
       type: "ruin",
       color: "orange",
@@ -40,7 +37,6 @@ const terrain = {
       ]
     },
 
-    // ───── MID LEFT – BLUE ─────
     {
       type: "ruin",
       color: "teal",
@@ -52,7 +48,6 @@ const terrain = {
       ]
     },
 
-    // ───── MID CENTER – BLUE ─────
     {
       type: "ruin",
       color: "teal",
@@ -64,7 +59,6 @@ const terrain = {
       ]
     },
 
-    // ───── MID RIGHT – BLUE (SPEGLAD) ─────
     {
       type: "ruin",
       color: "teal",
@@ -76,7 +70,6 @@ const terrain = {
       ]
     },
 
-    // ───── BOTTOM LEFT – ORANGE ─────
     {
       type: "ruin",
       color: "orange",
@@ -88,7 +81,6 @@ const terrain = {
       ]
     },
 
-    // ───── BOTTOM CENTER – ORANGE ─────
     {
       type: "ruin",
       color: "orange",
@@ -100,7 +92,6 @@ const terrain = {
       ]
     },
 
-    // ───── BOTTOM RIGHT – SMALL GREY ─────
     {
       type: "ruin",
       x: 820, y: 540,
@@ -110,5 +101,6 @@ const terrain = {
         [[140,0],[140,60]]
       ]
     }
+
   ]
 };
