@@ -117,20 +117,20 @@ function drawModels() {
     if (m.x === null || m.base === null) return;
 
     // bubbles: transparent fill + black outline
-    if (Array.isArray(m.bubbles)) {
-      m.bubbles.forEach(r => {
-        ctx.beginPath();
-        ctx.fillStyle = hexToRgba(m.color, 0.25);
-        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
-        ctx.fill();
+if (Array.isArray(m.bubbles)) {
+  m.bubbles.forEach(r => {
+    ctx.beginPath();
+    ctx.fillStyle = hexToRgba(m.color, 0.25); // genomskinlig
+    ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
+    ctx.fill();
 
-        ctx.beginPath();
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
-        ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
-        ctx.stroke();
-      });
-    }
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.arc(m.x, m.y, r * INCH, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
 
     drawBase(m);
 
