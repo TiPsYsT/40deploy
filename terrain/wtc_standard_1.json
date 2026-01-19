@@ -1,8 +1,8 @@
 // terrain.js
-// Dawn of War – WTC style
-// Pixelbaserat (ingen grid, ingen rotation)
+// Dawn of War – WTC layout
+// Pixelbaserat, inga modules
 
-export const terrain = {
+const terrain = {
   pieces: [
 
     // ───── TOP LEFT – SMALL GREY ─────
@@ -40,7 +40,7 @@ export const terrain = {
       ]
     },
 
-    // ───── MID LEFT – BLUE (L ROTERAD) ─────
+    // ───── MID LEFT – BLUE ─────
     {
       type: "ruin",
       color: "teal",
@@ -110,6 +110,5 @@ export const terrain = {
         [[140,0],[140,60]]
       ]
     }
-
   ]
 };
