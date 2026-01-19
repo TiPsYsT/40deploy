@@ -84,7 +84,7 @@ function drawObjectives(objs = []) {
   });
 }
 
-/* ---------- terrain (ROTATION FIXAD) ---------- */
+/* ---------- terrain ---------- */
 
 function drawTerrain(pieces) {
   pieces.forEach(p => {
@@ -119,18 +119,25 @@ function drawTerrain(pieces) {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, p.w, p.h);
 
-    // WALLS (roteras automatiskt)
-    if (Array.isArray(p.walls)) {
-      ctx.strokeStyle = "#6f6f6f";
-      ctx.lineWidth = p.wall || 3;
+    /* ======== WALLS (FIX: TJOCK L, 1 RUTA) ======== */
+    if (p.type === "ruin" && p.walls) {
+      ctx.fillStyle = "#6f6f6f";
+      const t = INCH; // exakt 1 ruta
 
-      p.walls.forEach(w => {
-        ctx.beginPath();
-        ctx.moveTo(w[0][0], w[0][1]);
-        ctx.lineTo(w[1][0], w[1][1]);
-        ctx.stroke();
-      });
+      if (p.walls.top) {
+        ctx.fillRect(0, 0, p.w, t);
+      }
+      if (p.walls.left) {
+        ctx.fillRect(0, 0, t, p.h);
+      }
+      if (p.walls.right) {
+        ctx.fillRect(p.w - t, 0, t, p.h);
+      }
+      if (p.walls.bottom) {
+        ctx.fillRect(0, p.h - t, p.w, t);
+      }
     }
+    /* ======== END WALL FIX ======== */
 
     ctx.restore();
   });
