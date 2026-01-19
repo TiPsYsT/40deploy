@@ -7,6 +7,7 @@ export function renderSidebar() {
   if (help) sidebar.appendChild(help);
 
   const groups = {};
+
   getModels().forEach(m => {
     if (!groups[m.name]) groups[m.name] = [];
     groups[m.name].push(m);
@@ -30,7 +31,7 @@ export function renderSidebar() {
 
     const dot = document.createElement("div");
     dot.className = "color-dot";
-    dot.style.background = models[0].color;
+    dot.style.background = models[0].color; // ✅ finns alltid nu
 
     proxy.appendChild(dot);
     proxy.appendChild(document.createTextNode(cap(name)));
