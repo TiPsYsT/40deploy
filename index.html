@@ -2,41 +2,77 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>40K Deployment Trainer</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Terrain Editor</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #111;
+      color: #eee;
+    }
+
+    #controls {
+      padding: 10px;
+      background: #222;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    #controls button {
+      padding: 6px 10px;
+      cursor: pointer;
+      background: #333;
+      color: #eee;
+      border: 1px solid #555;
+    }
+
+    #controls button:hover {
+      background: #444;
+    }
+
+    .sep {
+      width: 16px;
+      height: 1px;
+    }
+
+    canvas {
+      display: block;
+      background: #eee;
+    }
+  </style>
 </head>
 <body>
 
-  <div id="topbar">
-    <input type="file" id="fileInput" />
+<div id="controls">
+  <!-- RUINS -->
+  <button id="two">2-storey ruin (red)</button>
+  <button id="two-inv">2-storey ruin (red, inverted)</button>
 
-    <select id="missionSelect">
-      <option value="">– mission –</option>
-      <option value="dawn_of_war">Dawn of War</option>
-    </select>
+  <button id="three">3-storey ruin (blue)</button>
+  <button id="three-inv">3-storey ruin (blue, inverted)</button>
 
-    <select id="terrainSelect">
-      <option value="">– terrain –</option>
-      <option value="wtc_standard_1">WTC Terrain 1</option>
-    </select>
+  <button id="proto">Prototype ruin</button>
+  <button id="cont">Container</button>
 
-    <button id="clearBubbles">Clear bubbles</button>
-  </div>
+  <div class="sep"></div>
 
-  <div id="container">
-    <div id="sidebar">
-      <div class="help">
-        <b>Shortcuts</b><br>
-        R = Ruler<br>
-        1 / 2 / 3 / 6 / 9 / 0 = bubbles (inches)<br>
-        C = clear bubbles<br>
-        Drag box = multi-select
-      </div>
-    </div>
+  <!-- ROTATION -->
+  <button id="rot-left">Rotate −22.5°</button>
+  <button id="rot-right">Rotate +22.5°</button>
 
-    <canvas id="board" width="1524" height="1118"></canvas>
-  </div>
+  <div class="sep"></div>
 
-  <script type="module" src="app.js"></script>
+  <!-- EXPORT -->
+  <button id="export">Export JSON</button>
+</div>
+
+<canvas id="board" width="1524" height="1118"></canvas>
+
+<!-- IMPORTANT: module -->
+<script type="module" src="editor.js"></script>
+
 </body>
 </html>
