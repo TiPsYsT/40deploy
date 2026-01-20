@@ -97,47 +97,32 @@ function drawTerrain(pieces) {
     ctx.rotate(rot);
     ctx.translate(-p.w / 2, -p.h / 2);
 
-    // FOOTPRINT
-    if (p.type === "ruin") {
-      if (p.color === "teal") {
-        ctx.fillStyle = "rgba(90,190,200,0.55)";
-      } else if (p.color === "orange") {
-        ctx.fillStyle = "rgba(220,120,80,0.55)";
-      } else {
-        ctx.fillStyle = "rgba(160,160,160,0.45)";
-      }
-      ctx.fillRect(0, 0, p.w, p.h);
-    }
+    /* ---------- FOOTPRINT ---------- */
+    ctx.fillStyle =
+      p.color === "red"  ? "rgba(220,80,80,0.5)" :
+      p.color === "blue" ? "rgba(80,80,220,0.5)" :
+      "rgba(160,160,160,0.45)";
 
-    if (p.type === "container") {
-      ctx.fillStyle = "#c9d3dd";
-      ctx.fillRect(0, 0, p.w, p.h);
-    }
+    ctx.fillRect(0, 0, p.w, p.h);
 
-    // OUTLINE
+    /* ---------- OUTLINE ---------- */
     ctx.strokeStyle = p.type === "container" ? "#7a8694" : "black";
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, p.w, p.h);
 
-    /* ======== WALLS (FIX: TJOCK L, 1 RUTA) ======== */
-    if (p.type === "ruin" && p.walls) {
-      ctx.fillStyle = "#6f6f6f";
-      const t = INCH; // exakt 1 ruta
+    /* ---------- WALLS (JSON LINES) ---------- */
+    if (p.walls?.length) {
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = INCH; // exakt 1"
+      ctx.lineCap = "butt";
 
-      if (p.walls.top) {
-        ctx.fillRect(0, 0, p.w, t);
-      }
-      if (p.walls.left) {
-        ctx.fillRect(0, 0, t, p.h);
-      }
-      if (p.walls.right) {
-        ctx.fillRect(p.w - t, 0, t, p.h);
-      }
-      if (p.walls.bottom) {
-        ctx.fillRect(0, p.h - t, p.w, t);
-      }
+      p.walls.forEach(w => {
+        ctx.beginPath();
+        ctx.moveTo(w[0][0], w[0][1]);
+        ctx.lineTo(w[1][0], w[1][1]);
+        ctx.stroke();
+      });
     }
-    /* ======== END WALL FIX ======== */
 
     ctx.restore();
   });
