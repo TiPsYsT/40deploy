@@ -168,24 +168,12 @@ function drawBase(m) {
 /* ---------- selection + ruler (oförändrat) ---------- */
 /* ... exakt som du hade ... */
 
-/* ---------- FORCE CANVAS DROP ACCEPT ---------- */
+/* ---------- sidebar drop ---------- */
 
-canvas.addEventListener("dragenter", e => {
-  if (!window.sidebarDragging) return;
+canvas.ondragover = e => e.preventDefault();
+
+canvas.ondrop = e => {
   e.preventDefault();
-});
-
-canvas.addEventListener("dragover", e => {
-  if (!window.sidebarDragging) return;
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "copy";
-});
-
-canvas.addEventListener("drop", e => {
-  if (!window.sidebarDragging) return;
-  e.preventDefault();
-  window.sidebarDragging = false;
-
   const name = e.dataTransfer.getData("text/plain");
   if (!name) return;
 
@@ -202,4 +190,5 @@ canvas.addEventListener("drop", e => {
   });
 
   draw();
-});
+};
+
