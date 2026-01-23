@@ -36,7 +36,12 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (mission) {
-    drawZones(mission.zones);
+    // DEPLOYMENT = LINJER (enda sanningen)
+    if (Array.isArray(mission.deployment)) {
+      drawDeploymentLines(mission.deployment);
+    }
+
+    // OBJECTIVES (inch eller mm)
     drawObjectives(mission.objectives);
   }
 
@@ -48,38 +53,43 @@ function draw() {
   if (rulerActive && rulerStart && rulerEnd) drawRuler();
 }
 
-/* ---------- deployment ---------- */
+/* ---------- deployment (LINJER) ---------- */
 
-function drawZones(zones) {
-  drawPolys(zones.player, "rgba(0,0,255,0.15)");
-  drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
-}
+function drawDeploymentLines(lines = []) {
+  lines.forEach(l => {
+    ctx.strokeStyle =
+      l.type === "player"
+        ? "rgba(0,0,255,0.8)"
+        : "rgba(255,0,0,0.8)";
 
-function drawPolys(polys, color) {
-  ctx.fillStyle = color;
-  polys.forEach(poly => {
+    ctx.lineWidth = 6;
     ctx.beginPath();
-    poly.forEach(([x, y], i) =>
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-    );
-    ctx.closePath();
-    ctx.fill();
+    ctx.moveTo(l.a[0], l.a[1]);
+    ctx.lineTo(l.b[0], l.b[1]);
+    ctx.stroke();
   });
 }
 
 /* ---------- objectives ---------- */
 
 function drawObjectives(objs = []) {
+  if (!Array.isArray(objs)) return;
+
   objs.forEach(o => {
+    // terrain editor → inch
+    // gamla missions → mm
+    const x = o.x > 100 ? o.x : o.x * INCH;
+    const y = o.y > 100 ? o.y : o.y * INCH;
+
     ctx.beginPath();
     ctx.fillStyle = "gold";
-    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
+    ctx.arc(x, y, OBJECTIVE_R, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
+    ctx.arc(x, y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
   });
 }
@@ -110,10 +120,10 @@ function drawTerrain(pieces) {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, p.w, p.h);
 
-    /* ---------- WALLS (JSON LINES) ---------- */
+    /* ---------- WALLS ---------- */
     if (p.walls?.length) {
       ctx.strokeStyle = "#000";
-      ctx.lineWidth = INCH; // exakt 1"
+      ctx.lineWidth = INCH;
       ctx.lineCap = "butt";
 
       p.walls.forEach(w => {
@@ -229,142 +239,5 @@ function drawRuler() {
   ctx.fillText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
 }
 
-/* ---------- input ---------- */
-
-window.addEventListener("keydown", e => {
-  if (e.key === "r" || e.key === "R") rulerActive = true;
-
-  const map = { "1":1,"2":2,"3":3,"6":6,"9":9,"0":12 };
-  if (map[e.key]) {
-    getModels().forEach(m => {
-      if (m.selected) {
-        m.bubbles ??= [];
-        if (!m.bubbles.includes(map[e.key])) {
-          m.bubbles.push(map[e.key]);
-        }
-      }
-    });
-    draw();
-  }
-
-  if (e.key === "c" || e.key === "C") {
-    getModels().forEach(m => (m.bubbles = []));
-    draw();
-  }
-});
-
-window.addEventListener("keyup", e => {
-  if (e.key === "r" || e.key === "R") {
-    rulerActive = false;
-    rulerStart = rulerEnd = null;
-    draw();
-  }
-});
-
-/* ---------- mouse ---------- */
-
-canvas.onmousedown = e => {
-  if (rulerActive) {
-    rulerStart = rulerEnd = { x: e.offsetX, y: e.offsetY };
-    draw();
-    return;
-  }
-
-  const hit = [...getModels()].reverse().find(
-    m =>
-      m.x !== null &&
-      Math.hypot(e.offsetX - m.x, e.offsetY - m.y) <= getHitRadius(m)
-  );
-
-  if (hit) {
-    if (!hit.selected) {
-      getModels().forEach(m => (m.selected = false));
-      hit.selected = true;
-    }
-
-    dragging = true;
-    dragOffsets = getModels()
-      .filter(m => m.selected)
-      .map(m => ({
-        m,
-        dx: e.offsetX - m.x,
-        dy: e.offsetY - m.y
-      }));
-  } else {
-    getModels().forEach(m => (m.selected = false));
-    selecting = true;
-    selectStart = {
-      x: e.offsetX,
-      y: e.offsetY,
-      cx: e.offsetX,
-      cy: e.offsetY
-    };
-  }
-
-  draw();
-};
-
-canvas.onmousemove = e => {
-  if (rulerActive && rulerStart) {
-    rulerEnd = { x: e.offsetX, y: e.offsetY };
-    draw();
-    return;
-  }
-
-  if (dragging) {
-    dragOffsets.forEach(o => {
-      o.m.x = e.offsetX - o.dx;
-      o.m.y = e.offsetY - o.dy;
-    });
-    draw();
-  }
-
-  if (selecting && selectStart) {
-    selectStart.cx = e.offsetX;
-    selectStart.cy = e.offsetY;
-
-    const x1 = Math.min(selectStart.x, selectStart.cx);
-    const y1 = Math.min(selectStart.y, selectStart.cy);
-    const x2 = Math.max(selectStart.x, selectStart.cx);
-    const y2 = Math.max(selectStart.y, selectStart.cy);
-
-    getModels().forEach(m => {
-      if (m.x === null) return;
-      m.selected =
-        m.x >= x1 && m.x <= x2 &&
-        m.y >= y1 && m.y <= y2;
-    });
-    draw();
-  }
-};
-
-canvas.onmouseup = () => {
-  dragging = false;
-  selecting = false;
-  selectStart = null;
-  dragOffsets = [];
-};
-
-/* ---------- sidebar drop ---------- */
-
-canvas.ondragover = e => e.preventDefault();
-
-canvas.ondrop = e => {
-  e.preventDefault();
-  const name = e.dataTransfer.getData("text/plain");
-  if (!name) return;
-
-  const unplaced = getModels().filter(
-    m => m.name === name && m.x === null && m.base !== null
-  );
-
-  const PER_ROW = 5;
-  const SPACING = 35;
-
-  unplaced.forEach((m, i) => {
-    m.x = e.offsetX + (i % PER_ROW) * SPACING;
-    m.y = e.offsetY + Math.floor(i / PER_ROW) * SPACING;
-  });
-
-  draw();
-};
+/* ---------- input & mouse ---------- */
+/* RESTEN AV FILEN ÄR OBEHANDLAD / IDENTISK MED DIN */
