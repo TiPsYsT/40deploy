@@ -38,6 +38,7 @@ export function renderSidebar() {
 
     /* 🔧 FIX: säkerställ giltig drag-payload */
     proxy.ondragstart = e => {
+      sidebarDragging = true;
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("text/plain", name);
     };
