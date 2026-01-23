@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>40K Deployment Trainer</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
@@ -12,12 +12,14 @@
 
     <select id="missionSelect">
       <option value="">– mission –</option>
+      <!-- value = exakt filnamn utan .json -->
       <option value="dawn_of_war">Dawn of War</option>
     </select>
 
     <select id="terrainSelect">
       <option value="">– terrain –</option>
-      <option value="wtc_standard_1">Hammer and anvil</option>
+      <!-- value = exakt filnamn utan .json -->
+      <option value="wtc_standard_1">Hammer and Anvil</option>
     </select>
 
     <button id="clearBubbles">Clear bubbles</button>
@@ -37,6 +39,7 @@
     <canvas id="board" width="1524" height="1118"></canvas>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <!-- main entry -->
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
