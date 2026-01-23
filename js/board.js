@@ -26,7 +26,16 @@ let rulerEnd = null;
 
 export function initBoard(m = null, t = null) {
   mission = m;
-  terrain = t;
+
+  // NYTT: stöd för båda format
+  if (t?.terrain?.pieces) {
+    terrain = t.terrain;
+  } else if (t?.pieces) {
+    terrain = t;
+  } else {
+    terrain = { pieces: [] };
+  }
+
   draw();
 }
 
