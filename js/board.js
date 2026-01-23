@@ -170,16 +170,23 @@ function drawBase(m) {
 
 /* ---------- sidebar drop ---------- */
 
-canvas.ondragover = e => e.preventDefault();
+/* ---------- sidebar drop ---------- */
+
+canvas.ondragover = e => {
+  e.preventDefault();   // ← detta är det ENDA som behövs
+};
 
 canvas.ondrop = e => {
   e.preventDefault();
+
   const name = e.dataTransfer.getData("text/plain");
   if (!name) return;
 
   const unplaced = getModels().filter(
     m => m.name === name && m.x === null && m.base !== null
   );
+
+  if (!unplaced.length) return;
 
   const PER_ROW = 5;
   const SPACING = 35;
@@ -191,4 +198,5 @@ canvas.ondrop = e => {
 
   draw();
 };
+
 
