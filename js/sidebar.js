@@ -36,14 +36,9 @@ export function renderSidebar() {
     proxy.appendChild(dot);
     proxy.appendChild(document.createTextNode(cap(name)));
 
-    proxy.ondragstart = e => {
-      window.sidebarDragging = true;
-      e.dataTransfer.effectAllowed = "copy";
+    // ORIGINAL – FUNKADE
+    proxy.ondragstart = e =>
       e.dataTransfer.setData("text/plain", name);
-    };
-    proxy.ondragend = () => {
-  window.sidebarDragging = false;
-};
 
     sidebar.appendChild(proxy);
   });
