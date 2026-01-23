@@ -41,6 +41,9 @@ export function renderSidebar() {
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("text/plain", name);
     };
+    proxy.ondragend = () => {
+  window.sidebarDragging = false;
+};
 
     sidebar.appendChild(proxy);
   });
