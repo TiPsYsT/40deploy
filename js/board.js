@@ -255,16 +255,20 @@ function drawRuler() {
 /* ---------- FORCE CANVAS DROP ACCEPT ---------- */
 
 canvas.addEventListener("dragenter", e => {
+  if (!sidebarDragging) return;
   e.preventDefault();
 });
 
 canvas.addEventListener("dragover", e => {
-  e.preventDefault();                 // 🔑 ABSOLUT KRAV
-  e.dataTransfer.dropEffect = "copy"; // 🔑 UTTALA TILLÅTET
+  if (!sidebarDragging) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "copy";
 });
 
 canvas.addEventListener("drop", e => {
+  if (!sidebarDragging) return;
   e.preventDefault();
+  sidebarDragging = false;
 
   const name = e.dataTransfer.getData("text/plain");
   if (!name) return;
@@ -285,4 +289,5 @@ canvas.addEventListener("drop", e => {
 
   draw();
 });
+
 
