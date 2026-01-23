@@ -51,11 +51,12 @@ function draw() {
 /* ---------- deployment ---------- */
 
 function drawZones(zones) {
+  if (!zones) return;
   drawPolys(zones.player, "rgba(0,0,255,0.15)");
   drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
 }
 
-function drawPolys(polys, color) {
+function drawPolys(polys = [], color) {
   ctx.fillStyle = color;
   polys.forEach(poly => {
     ctx.beginPath();
@@ -67,22 +68,43 @@ function drawPolys(polys, color) {
   });
 }
 
+/* ---------- deployment lines (inch → px) ---------- */
+
+function drawDeploymentLines(lines = []) {
+  lines.forEach(l => {
+    ctx.strokeStyle =
+      l.type === "player"
+        ? "rgba(0,0,255,0.8)"
+        : "rgba(255,0,0,0.8)";
+
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(l.a[0] * INCH, l.a[1] * INCH);
+    ctx.lineTo(l.b[0] * INCH, l.b[1] * INCH);
+    ctx.stroke();
+  });
+}
+
 /* ---------- objectives ---------- */
 
 function drawObjectives(objs = []) {
   objs.forEach(o => {
+    const x = o.x * INCH;
+    const y = o.y * INCH;
+
     ctx.beginPath();
     ctx.fillStyle = "gold";
-    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
+    ctx.arc(x, y, OBJECTIVE_R, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
+    ctx.arc(x, y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
   });
 }
+
 
 /* ---------- terrain ---------- */
 
