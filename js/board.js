@@ -250,3 +250,38 @@ function drawRuler() {
 
 /* ---------- input & mouse ---------- */
 /* RESTEN AV FILEN ÄR OBEHANDLAD / IDENTISK MED DIN */
+
+/* ---------- FORCE CANVAS DROP ACCEPT ---------- */
+
+canvas.addEventListener("dragenter", e => {
+  e.preventDefault();
+});
+
+canvas.addEventListener("dragover", e => {
+  e.preventDefault();                 // 🔑 ABSOLUT KRAV
+  e.dataTransfer.dropEffect = "copy"; // 🔑 UTTALA TILLÅTET
+});
+
+canvas.addEventListener("drop", e => {
+  e.preventDefault();
+
+  const name = e.dataTransfer.getData("text/plain");
+  if (!name) return;
+
+  const unplaced = getModels().filter(
+    m => m.name === name && m.x === null && m.base !== null
+  );
+
+  if (!unplaced.length) return;
+
+  const PER_ROW = 5;
+  const SPACING = 35;
+
+  unplaced.forEach((m, i) => {
+    m.x = e.offsetX + (i % PER_ROW) * SPACING;
+    m.y = e.offsetY + Math.floor(i / PER_ROW) * SPACING;
+  });
+
+  draw();
+});
+
