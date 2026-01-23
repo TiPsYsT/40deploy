@@ -39,8 +39,6 @@ export function renderSidebar() {
     // ORIGINAL – FUNKADE
     proxy.ondragstart = e =>
       e.dataTransfer.setData("text/plain", name);
-
-    sidebar.appendChild(proxy);
   });
 }
 
