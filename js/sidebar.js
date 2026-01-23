@@ -31,14 +31,15 @@ export function renderSidebar() {
 
     const dot = document.createElement("div");
     dot.className = "color-dot";
-    dot.style.background = models[0].color;
+    dot.style.background = models[0].color; // ✅ finns alltid nu
 
     proxy.appendChild(dot);
     proxy.appendChild(document.createTextNode(cap(name)));
 
-    // ORIGINAL – FUNKADE
     proxy.ondragstart = e =>
       e.dataTransfer.setData("text/plain", name);
+
+    sidebar.appendChild(proxy);
   });
 }
 
