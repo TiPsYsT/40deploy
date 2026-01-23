@@ -13,14 +13,10 @@ const terrainSelect = document.getElementById("terrainSelect");
 let currentMission = null;
 let currentTerrain = null;
 
-/* ================= INIT ================= */
-
 (async function init() {
   await loadBases();
   initBoard();
 })();
-
-/* ================= IMPORT ARMY ================= */
 
 fileInput.addEventListener("change", e => {
   const file = e.target.files[0];
@@ -30,15 +26,13 @@ fileInput.addEventListener("change", e => {
     const json = JSON.parse(e.target.result);
     const models = importNewRecruit(json);
 
-    setModels(models);
-    renderSidebar();
+    setModels(models);      // ✅ färger sätts här
+    renderSidebar();        // ✅ sidebar ser färger
     initBoard(currentMission, currentTerrain);
   };
 
   reader.readAsText(file);
 });
-
-/* ================= MISSION ================= */
 
 missionSelect.addEventListener("change", async e => {
   currentMission = e.target.value
@@ -48,19 +42,10 @@ missionSelect.addEventListener("change", async e => {
   initBoard(currentMission, currentTerrain);
 });
 
-/* ================= TERRAIN ================= */
-
 terrainSelect.addEventListener("change", async e => {
-  if (!e.target.value) {
-    currentTerrain = null;
-    initBoard(currentMission, null);
-    return;
-  }
-
-  const terrainJson = await loadTerrain(e.target.value);
-
-  // 🔑 NYCKELRADEN – stödjer GAMMALT + NYTT FORMAT
-  currentTerrain = terrainJson?.terrain ?? terrainJson;
+  currentTerrain = e.target.value
+    ? await loadTerrain(e.target.value)
+    : null;
 
   initBoard(currentMission, currentTerrain);
 });
