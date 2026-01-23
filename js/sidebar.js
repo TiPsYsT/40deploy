@@ -36,9 +36,8 @@ export function renderSidebar() {
     proxy.appendChild(dot);
     proxy.appendChild(document.createTextNode(cap(name)));
 
-    /* 🔧 FIX: säkerställ giltig drag-payload */
     proxy.ondragstart = e => {
-      sidebarDragging = true;
+      window.sidebarDragging = true;
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("text/plain", name);
     };
