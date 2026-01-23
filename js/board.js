@@ -1,4 +1,4 @@
-let sidebarDragging = false;
+window.sidebarDragging = false;
 import { getModels } from "./state.js";
 
 const canvas = document.getElementById("board");
