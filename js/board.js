@@ -9,7 +9,7 @@ const CONTROL_R = 76;
 
 // state
 let mission = null;
-let terrain = { pieces: [] };
+let terrain = null;
 
 // interaction
 let dragging = false;
@@ -26,15 +26,7 @@ let rulerEnd = null;
 
 export function initBoard(m = null, t = null) {
   mission = m;
-
-  if (t?.pieces) {
-    terrain = t;
-  } else if (t?.terrain?.pieces) {
-    terrain = t.terrain;
-  } else {
-    terrain = { pieces: [] };
-  }
-
+  terrain = t;
   draw();
 }
 
@@ -44,19 +36,11 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (mission) {
-    if (mission.zones) {
-      drawZones(mission.zones);
-    }
-
-    // ✅ NYTT: deployment-linjer
-    if (Array.isArray(mission.deployment)) {
-      drawDeploymentLines(mission.deployment);
-    }
-
+    drawZones(mission.zones);
     drawObjectives(mission.objectives);
   }
 
-  if (terrain?.pieces) drawTerrain(terrain.pieces);
+  if (terrain) drawTerrain(terrain.pieces);
 
   drawModels();
 
@@ -64,15 +48,14 @@ function draw() {
   if (rulerActive && rulerStart && rulerEnd) drawRuler();
 }
 
-/* ---------- deployment (zones) ---------- */
+/* ---------- deployment ---------- */
 
 function drawZones(zones) {
-  if (!zones) return;
   drawPolys(zones.player, "rgba(0,0,255,0.15)");
   drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
 }
 
-function drawPolys(polys = [], color) {
+function drawPolys(polys, color) {
   ctx.fillStyle = color;
   polys.forEach(poly => {
     ctx.beginPath();
@@ -84,48 +67,26 @@ function drawPolys(polys = [], color) {
   });
 }
 
-/* ---------- deployment (LINJER) ---------- */
-/* ✅ NYTT – påverkar inget annat */
-
-function drawDeploymentLines(lines = []) {
-  lines.forEach(l => {
-    ctx.strokeStyle =
-      l.type === "player"
-        ? "rgba(0,0,255,0.8)"
-        : "rgba(255,0,0,0.8)";
-
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.moveTo(l.a[0] * INCH, l.a[1] * INCH);
-    ctx.lineTo(l.b[0] * INCH, l.b[1] * INCH);
-    ctx.stroke();
-  });
-}
-
 /* ---------- objectives ---------- */
 
 function drawObjectives(objs = []) {
   objs.forEach(o => {
-    // ✅ FIX: mission-objectives är i inch
-    const x = o.x * INCH;
-    const y = o.y * INCH;
-
     ctx.beginPath();
     ctx.fillStyle = "gold";
-    ctx.arc(x, y, OBJECTIVE_R, 0, Math.PI * 2);
+    ctx.arc(o.x, o.y, OBJECTIVE_R, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    ctx.arc(x, y, CONTROL_R, 0, Math.PI * 2);
+    ctx.arc(o.x, o.y, CONTROL_R, 0, Math.PI * 2);
     ctx.stroke();
   });
 }
 
 /* ---------- terrain ---------- */
 
-function drawTerrain(pieces = []) {
+function drawTerrain(pieces) {
   pieces.forEach(p => {
     const cx = p.x + p.w / 2;
     const cy = p.y + p.h / 2;
@@ -136,6 +97,7 @@ function drawTerrain(pieces = []) {
     ctx.rotate(rot);
     ctx.translate(-p.w / 2, -p.h / 2);
 
+    /* ---------- FOOTPRINT ---------- */
     ctx.fillStyle =
       p.color === "red"  ? "rgba(220,80,80,0.5)" :
       p.color === "blue" ? "rgba(80,80,220,0.5)" :
@@ -143,13 +105,15 @@ function drawTerrain(pieces = []) {
 
     ctx.fillRect(0, 0, p.w, p.h);
 
+    /* ---------- OUTLINE ---------- */
     ctx.strokeStyle = p.type === "container" ? "#7a8694" : "black";
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, p.w, p.h);
 
+    /* ---------- WALLS (JSON LINES) ---------- */
     if (p.walls?.length) {
       ctx.strokeStyle = "#000";
-      ctx.lineWidth = INCH;
+      ctx.lineWidth = INCH; // exakt 1"
       ctx.lineCap = "butt";
 
       p.walls.forEach(w => {
@@ -197,5 +161,210 @@ function drawModels() {
   });
 }
 
-/* ---------- RESTEN ÄR OÄNDRAT ---------- */
-/* mouse, selection, sidebar drop – exakt som du hade */
+function drawBase(m) {
+  const base = m.base.toLowerCase();
+  ctx.beginPath();
+
+  if (base.includes("x")) {
+    const [w, h] = base.split("x").map(Number);
+    ctx.ellipse(m.x, m.y, w / 2, h / 2, 0, 0, Math.PI * 2);
+  } else {
+    ctx.arc(m.x, m.y, parseFloat(base) / 2, 0, Math.PI * 2);
+  }
+
+  ctx.fillStyle = m.color;
+  ctx.fill();
+  ctx.strokeStyle = "black";
+  ctx.stroke();
+}
+
+function getHitRadius(m) {
+  const base = m.base.toLowerCase();
+  if (base.includes("x")) {
+    const [w, h] = base.split("x").map(Number);
+    return Math.max(w, h) / 2 + 4;
+  }
+  return parseFloat(base) / 2 + 4;
+}
+
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ---------- selection ---------- */
+
+function drawSelectionBox() {
+  const x = Math.min(selectStart.x, selectStart.cx);
+  const y = Math.min(selectStart.y, selectStart.cy);
+  const w = Math.abs(selectStart.cx - selectStart.x);
+  const h = Math.abs(selectStart.cy - selectStart.y);
+
+  ctx.strokeStyle = "blue";
+  ctx.setLineDash([5, 5]);
+  ctx.strokeRect(x, y, w, h);
+  ctx.setLineDash([]);
+}
+
+/* ---------- ruler ---------- */
+
+function drawRuler() {
+  const inches =
+    Math.hypot(
+      rulerEnd.x - rulerStart.x,
+      rulerEnd.y - rulerStart.y
+    ) / INCH;
+
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 3;
+  ctx.moveTo(rulerStart.x, rulerStart.y);
+  ctx.lineTo(rulerEnd.x, rulerEnd.y);
+  ctx.stroke();
+
+  ctx.font = "bold 22px sans-serif";
+  ctx.strokeText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
+  ctx.fillText(`${inches.toFixed(1)}"`, rulerEnd.x + 8, rulerEnd.y - 8);
+}
+
+/* ---------- input ---------- */
+
+window.addEventListener("keydown", e => {
+  if (e.key === "r" || e.key === "R") rulerActive = true;
+
+  const map = { "1":1,"2":2,"3":3,"6":6,"9":9,"0":12 };
+  if (map[e.key]) {
+    getModels().forEach(m => {
+      if (m.selected) {
+        m.bubbles ??= [];
+        if (!m.bubbles.includes(map[e.key])) {
+          m.bubbles.push(map[e.key]);
+        }
+      }
+    });
+    draw();
+  }
+
+  if (e.key === "c" || e.key === "C") {
+    getModels().forEach(m => (m.bubbles = []));
+    draw();
+  }
+});
+
+window.addEventListener("keyup", e => {
+  if (e.key === "r" || e.key === "R") {
+    rulerActive = false;
+    rulerStart = rulerEnd = null;
+    draw();
+  }
+});
+
+/* ---------- mouse ---------- */
+
+canvas.onmousedown = e => {
+  if (rulerActive) {
+    rulerStart = rulerEnd = { x: e.offsetX, y: e.offsetY };
+    draw();
+    return;
+  }
+
+  const hit = [...getModels()].reverse().find(
+    m =>
+      m.x !== null &&
+      Math.hypot(e.offsetX - m.x, e.offsetY - m.y) <= getHitRadius(m)
+  );
+
+  if (hit) {
+    if (!hit.selected) {
+      getModels().forEach(m => (m.selected = false));
+      hit.selected = true;
+    }
+
+    dragging = true;
+    dragOffsets = getModels()
+      .filter(m => m.selected)
+      .map(m => ({
+        m,
+        dx: e.offsetX - m.x,
+        dy: e.offsetY - m.y
+      }));
+  } else {
+    getModels().forEach(m => (m.selected = false));
+    selecting = true;
+    selectStart = {
+      x: e.offsetX,
+      y: e.offsetY,
+      cx: e.offsetX,
+      cy: e.offsetY
+    };
+  }
+
+  draw();
+};
+
+canvas.onmousemove = e => {
+  if (rulerActive && rulerStart) {
+    rulerEnd = { x: e.offsetX, y: e.offsetY };
+    draw();
+    return;
+  }
+
+  if (dragging) {
+    dragOffsets.forEach(o => {
+      o.m.x = e.offsetX - o.dx;
+      o.m.y = e.offsetY - o.dy;
+    });
+    draw();
+  }
+
+  if (selecting && selectStart) {
+    selectStart.cx = e.offsetX;
+    selectStart.cy = e.offsetY;
+
+    const x1 = Math.min(selectStart.x, selectStart.cx);
+    const y1 = Math.min(selectStart.y, selectStart.cy);
+    const x2 = Math.max(selectStart.x, selectStart.cx);
+    const y2 = Math.max(selectStart.y, selectStart.cy);
+
+    getModels().forEach(m => {
+      if (m.x === null) return;
+      m.selected =
+        m.x >= x1 && m.x <= x2 &&
+        m.y >= y1 && m.y <= y2;
+    });
+    draw();
+  }
+};
+
+canvas.onmouseup = () => {
+  dragging = false;
+  selecting = false;
+  selectStart = null;
+  dragOffsets = [];
+};
+
+/* ---------- sidebar drop ---------- */
+
+canvas.ondragover = e => e.preventDefault();
+
+canvas.ondrop = e => {
+  e.preventDefault();
+  const name = e.dataTransfer.getData("text/plain");
+  if (!name) return;
+
+  const unplaced = getModels().filter(
+    m => m.name === name && m.x === null && m.base !== null
+  );
+
+  const PER_ROW = 5;
+  const SPACING = 35;
+
+  unplaced.forEach((m, i) => {
+    m.x = e.offsetX + (i % PER_ROW) * SPACING;
+    m.y = e.offsetY + Math.floor(i / PER_ROW) * SPACING;
+  });
+
+  draw();
+};
