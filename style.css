@@ -46,6 +46,44 @@ body {
   color: #333;
 }
 
+.terrain-import {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.terrain-import-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.terrain-import-options label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.terrain-import-options select {
+  flex: 0 0 120px;
+}
+
+#terrainInput {
+  resize: vertical;
+  min-height: 120px;
+  font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  padding: 6px;
+}
+
+.terrain-actions {
+  display: flex;
+  gap: 6px;
+}
+
 #board {
   border: 1px solid black;
   transform: scale(0.6);
