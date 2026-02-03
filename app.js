@@ -4,17 +4,11 @@ import { renderSidebar } from "./js/sidebar.js";
 import { initBoard } from "./js/board.js";
 import { loadBases } from "./js/baseResolver.js";
 import { loadMission } from "./js/missionLoader.js";
-import { loadTerrain, parseTerrainInput } from "./js/terrainLoader.js";
+import { loadTerrain } from "./js/terrainLoader.js";
 
 const fileInput = document.getElementById("fileInput");
 const missionSelect = document.getElementById("missionSelect");
 const terrainSelect = document.getElementById("terrainSelect");
-const terrainInput = document.getElementById("terrainInput");
-const terrainImport = document.getElementById("terrainImport");
-const terrainClear = document.getElementById("terrainClear");
-const terrainUnits = document.getElementById("terrainUnits");
-const terrainOrigin = document.getElementById("terrainOrigin");
-const terrainAnchor = document.getElementById("terrainAnchor");
 
 let currentMission = null;
 let currentTerrain = null;
@@ -53,36 +47,5 @@ terrainSelect.addEventListener("change", async e => {
     ? await loadTerrain(e.target.value)
     : null;
 
-  if (terrainInput) {
-    terrainInput.value = "";
-  }
-
   initBoard(currentMission, currentTerrain);
 });
-
-if (terrainImport) {
-  terrainImport.addEventListener("click", () => {
-    if (!terrainInput || !terrainInput.value.trim()) return;
-
-    try {
-      currentTerrain = parseTerrainInput(terrainInput.value, {
-        units: terrainUnits?.value,
-        origin: terrainOrigin?.value,
-        anchor: terrainAnchor?.value,
-      });
-      terrainSelect.value = "";
-      initBoard(currentMission, currentTerrain);
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-}
-
-if (terrainClear) {
-  terrainClear.addEventListener("click", () => {
-    currentTerrain = null;
-    terrainSelect.value = "";
-    if (terrainInput) terrainInput.value = "";
-    initBoard(currentMission, currentTerrain);
-  });
-}
