@@ -17,6 +17,7 @@
 
     <select id="terrainSelect">
       <option value="">– terrain –</option>
+      <option value="hammer_and_anvil">Hammer and Anvil</option>
       <option value="wtc_standard_1">WTC Terrain 1</option>
     </select>
 
@@ -31,6 +32,18 @@
         1 / 2 / 3 / 6 / 9 / 0 = bubbles (inches)<br>
         C = clear bubbles<br>
         Drag box = multi-select
+      </div>
+
+      <div class="terrain-import">
+        <label for="terrainInput"><b>Terrain import</b></label>
+        <textarea
+          id="terrainInput"
+          placeholder="Paste terrain JSON from the editor"
+        ></textarea>
+        <div class="terrain-actions">
+          <button id="terrainImport">Import</button>
+          <button id="terrainClear" type="button">Clear</button>
+        </div>
       </div>
     </div>
 
