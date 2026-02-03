@@ -9,7 +9,7 @@ const CONTROL_R = 76;
 
 // state
 let mission = null;
-let terrain = { pieces: [] };
+let terrain = null;
 
 // interaction
 let dragging = false;
@@ -26,16 +26,7 @@ let rulerEnd = null;
 
 export function initBoard(m = null, t = null) {
   mission = m;
-
-  // ✅ FIX: normalisera terrain
-  if (t?.pieces) {
-    terrain = t;
-  } else if (t?.terrain?.pieces) {
-    terrain = t.terrain;
-  } else {
-    terrain = { pieces: [] };
-  }
-
+  terrain = t;
   draw();
 }
 
@@ -49,7 +40,7 @@ function draw() {
     drawObjectives(mission.objectives);
   }
 
-  if (terrain?.pieces) drawTerrain(terrain.pieces);
+  if (terrain) drawTerrain(terrain.pieces);
 
   drawModels();
 
@@ -60,12 +51,11 @@ function draw() {
 /* ---------- deployment ---------- */
 
 function drawZones(zones) {
-  if (!zones) return;
   drawPolys(zones.player, "rgba(0,0,255,0.15)");
   drawPolys(zones.enemy, "rgba(255,0,0,0.15)");
 }
 
-function drawPolys(polys = [], color) {
+function drawPolys(polys, color) {
   ctx.fillStyle = color;
   polys.forEach(poly => {
     ctx.beginPath();
@@ -96,7 +86,7 @@ function drawObjectives(objs = []) {
 
 /* ---------- terrain ---------- */
 
-function drawTerrain(pieces = []) {
+function drawTerrain(pieces) {
   pieces.forEach(p => {
     const cx = p.x + p.w / 2;
     const cy = p.y + p.h / 2;
@@ -107,6 +97,7 @@ function drawTerrain(pieces = []) {
     ctx.rotate(rot);
     ctx.translate(-p.w / 2, -p.h / 2);
 
+    /* ---------- FOOTPRINT ---------- */
     ctx.fillStyle =
       p.color === "red"  ? "rgba(220,80,80,0.5)" :
       p.color === "blue" ? "rgba(80,80,220,0.5)" :
@@ -114,13 +105,15 @@ function drawTerrain(pieces = []) {
 
     ctx.fillRect(0, 0, p.w, p.h);
 
+    /* ---------- OUTLINE ---------- */
     ctx.strokeStyle = p.type === "container" ? "#7a8694" : "black";
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, p.w, p.h);
 
+    /* ---------- WALLS (JSON LINES) ---------- */
     if (p.walls?.length) {
       ctx.strokeStyle = "#000";
-      ctx.lineWidth = INCH;
+      ctx.lineWidth = INCH; // exakt 1"
       ctx.lineCap = "butt";
 
       p.walls.forEach(w => {
