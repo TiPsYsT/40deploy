@@ -1,0 +1,2156 @@
+{
+  "unit": "inches",
+  "map_pack": "wtc-2025",
+  "deployment_zones": {
+    "CrucibleOfBattleStrikeForce": {
+      "attacker_path": "M 0,0 L 30,44 L 0,44 L 0,0",
+      "defender_path": "M 30,0 L 60,0 L 60,44 L 30,0"
+    },
+    "SearchAndDestroyStrikeForce": {
+      "attacker_path": "M 30 31 L 30 44 L 0 44 L 0 22 L 21 22 A 9 9 0 0 0 30 31",
+      "defender_path": "M 30 13 L 30 0 L 60 0 L 60 22 L 39 22 A 9 9 0 0 0 30 13"
+    },
+    "DawnOfWarStrikeForce": {
+      "attacker_path": "M 0,32 L 60,32 L 60,44 L 0,44",
+      "defender_path": "M 0,0 L 0,12 L 60,12 L 60,0"
+    },
+    "HammerAndAnvilStrikeForce": {
+      "attacker_path": "M 42,0 L 60,0 L 60,44 L 42,44",
+      "defender_path": "M 0,0 L 18,0 L 18,44 L 0,44"
+    },
+    "SweepingEngagementStrikeForce": {
+      "attacker_path": "M 0,0 L 60,0 L 60,14 L 30,14 L 30,8 L 0,8",
+      "defender_path": "M 0,44 L 60,44 L 60,36 L 30,36 L 30,30 L 0,30"
+    },
+    "TippingPointStrikeForce": {
+      "attacker_path": "M 60,0 L 60,44 L 48,44 L 48,22 L 40,22 L 40,0",
+      "defender_path": "M 0,0 L 12,0 L 12,22 L 20,22 L 20,44 L 0,44"
+    }
+  },
+  "objectives_by_deployment": {
+    "CrucibleOfBattleStrikeForce": [
+      {
+        "x": 30.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 20.0,
+        "y": 8.0,
+        "radius": 0.75
+      },
+      {
+        "x": 14.0,
+        "y": 34.0,
+        "radius": 0.75
+      },
+      {
+        "x": 40.0,
+        "y": 36.0,
+        "radius": 0.75
+      },
+      {
+        "x": 46.0,
+        "y": 10.0,
+        "radius": 0.75
+      }
+    ],
+    "SearchAndDestroyStrikeForce": [
+      {
+        "x": 30.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 14.0,
+        "y": 10.0,
+        "radius": 0.75
+      },
+      {
+        "x": 14.0,
+        "y": 34.0,
+        "radius": 0.75
+      },
+      {
+        "x": 46.0,
+        "y": 34.0,
+        "radius": 0.75
+      },
+      {
+        "x": 46.0,
+        "y": 10.0,
+        "radius": 0.75
+      }
+    ],
+    "HammerAndAnvilStrikeForce": [
+      {
+        "x": 30.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 30.0,
+        "y": 38.0,
+        "radius": 0.75
+      },
+      {
+        "x": 30.0,
+        "y": 6.0,
+        "radius": 0.75
+      },
+      {
+        "x": 50.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 10.0,
+        "y": 22.0,
+        "radius": 0.75
+      }
+    ],
+    "DawnOfWarStrikeForce": [
+      {
+        "x": 30.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 30.0,
+        "y": 38.0,
+        "radius": 0.75
+      },
+      {
+        "x": 30.0,
+        "y": 6.0,
+        "radius": 0.75
+      },
+      {
+        "x": 50.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 10.0,
+        "y": 22.0,
+        "radius": 0.75
+      }
+    ],
+    "TippingPointStrikeForce": [
+      {
+        "x": 22.0,
+        "y": 8.0,
+        "radius": 0.75
+      },
+      {
+        "x": 46.0,
+        "y": 10.0,
+        "radius": 0.75
+      },
+      {
+        "x": 30.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 14.0,
+        "y": 34.0,
+        "radius": 0.75
+      },
+      {
+        "x": 38.0,
+        "y": 36.0,
+        "radius": 0.75
+      }
+    ],
+    "SweepingEngagementStrikeForce": [
+      {
+        "x": 30.0,
+        "y": 22.0,
+        "radius": 0.75
+      },
+      {
+        "x": 18.0,
+        "y": 38.0,
+        "radius": 0.75
+      },
+      {
+        "x": 10.0,
+        "y": 18.0,
+        "radius": 0.75
+      },
+      {
+        "x": 42.0,
+        "y": 6.0,
+        "radius": 0.75
+      },
+      {
+        "x": 50.0,
+        "y": 26.0,
+        "radius": 0.75
+      }
+    ]
+  },
+  "layouts": [
+    {
+      "id": "wtc-2025-map-hammer-1",
+      "label": "1",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 27.0,
+          "y": 0.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 26.0,
+          "y": 31.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 18.0,
+          "y": 9.1,
+          "rotation": -210.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 11.8,
+          "y": 28.1,
+          "rotation": -70.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 29.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 27.2,
+          "y": 21.0,
+          "rotation": -31.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-hammer-2",
+      "label": "2",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 12.1,
+          "y": 35.0,
+          "rotation": 27.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 24.0,
+          "y": 27.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 27.4,
+          "y": 17.2,
+          "rotation": 150.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 9.0,
+          "y": 33.0,
+          "rotation": -90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 32.6,
+          "y": 14.3,
+          "rotation": -60.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.0,
+          "y": 6.8,
+          "rotation": 120.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-hammer-3",
+      "label": "3",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 22.9,
+          "y": 42.0,
+          "rotation": -152.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 17.0,
+          "y": 10.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 10.3,
+          "y": 30.0,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.2,
+          "y": 24.2,
+          "rotation": -60.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 29.9,
+          "y": 12.0,
+          "rotation": -69.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 32.2,
+          "y": 15.0,
+          "rotation": 108.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-hammer-4-5",
+      "label": "4 - 5",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 27.0,
+          "y": 0.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 22.85,
+          "y": 15.0,
+          "rotation": -160.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 18.0,
+          "y": 9.0,
+          "rotation": -204.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 11.8,
+          "y": 28.1,
+          "rotation": -70.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 30.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 27.2,
+          "y": 22.0,
+          "rotation": -31.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-hammer-6",
+      "label": "6",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 25.0,
+          "y": 21.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 29.0,
+          "y": 1.9,
+          "rotation": 72.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.2,
+          "y": 13.0,
+          "rotation": -58.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.2,
+          "y": 30.0,
+          "rotation": -58.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 24.0,
+          "y": 40.0,
+          "rotation": -90.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 23.4,
+          "y": 14.6,
+          "rotation": 116.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-hammer-7",
+      "label": "7",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 7.0,
+          "y": 0.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.0,
+          "y": 15.0,
+          "rotation": -90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.0,
+          "y": 13.0,
+          "rotation": -130.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 11.5,
+          "y": 28.0,
+          "rotation": -70.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 20.8,
+          "y": 39.0,
+          "rotation": -69.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 28.2,
+          "y": 18.9,
+          "rotation": 121.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-hammer-8",
+      "label": "8",
+      "deployment": "HammerAndAnvilStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 24.0,
+          "y": 21.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 30.9,
+          "y": 15.22,
+          "rotation": -120.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.0,
+          "y": 13.0,
+          "rotation": -65.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.0,
+          "y": 30.0,
+          "rotation": -66.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 21.0,
+          "y": 42.0,
+          "rotation": -90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 20.0,
+          "y": 21.2,
+          "rotation": -112.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-1",
+      "label": "1",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 38.0,
+          "y": 27.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 25.0,
+          "y": 31.0,
+          "rotation": -114.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 9.5,
+          "y": 13.0,
+          "rotation": 229.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 10.5,
+          "y": 31.0,
+          "rotation": 48.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 8.5,
+          "y": 14.2,
+          "rotation": 48.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 22.0,
+          "y": 11.0,
+          "rotation": 195.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-2",
+      "label": "2",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "three_storey_blue",
+          "x": 18.2,
+          "y": 13.0,
+          "rotation": 47.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 28.3,
+          "y": 16.5,
+          "rotation": 47.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 26.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 7.0,
+          "y": 15.3,
+          "rotation": -139.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 26.0,
+          "y": 13.0,
+          "rotation": -130.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.5,
+          "y": 36.0,
+          "rotation": -48.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-3",
+      "label": "3",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 39.0,
+          "y": 27.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 23.0,
+          "y": 31.2,
+          "rotation": -108.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 11.0,
+          "y": 13.0,
+          "rotation": 230.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 11.0,
+          "y": 31.0,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.6,
+          "y": 24.0,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 36.4,
+          "y": 33.5,
+          "rotation": 17.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-4-5",
+      "label": "4 - 5",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 26.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 7.0,
+          "y": 15.0,
+          "rotation": -130.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.6,
+          "y": 36.1,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 26.3,
+          "y": 13.0,
+          "rotation": -131.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 28.9,
+          "y": 17.0,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.7,
+          "y": 22.1,
+          "rotation": -50.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-6",
+      "label": "6",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 30.0,
+          "y": 41.0,
+          "rotation": -90.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 20.0,
+          "y": 29.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 20.0,
+          "y": 16.0,
+          "rotation": 59.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 17.5,
+          "y": 11.2,
+          "rotation": -51.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.4,
+          "y": 25.0,
+          "rotation": -58.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 29.5,
+          "y": 31.9,
+          "rotation": 130.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-7",
+      "label": "7",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 38.0,
+          "y": 27.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 23.0,
+          "y": 31.0,
+          "rotation": -104.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 10.0,
+          "y": 12.8,
+          "rotation": 226.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.4,
+          "y": 40.0,
+          "rotation": -48.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.4,
+          "y": 23.2,
+          "rotation": -48.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 24.9,
+          "y": 11.5,
+          "rotation": -160.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-crucible-8",
+      "label": "8",
+      "deployment": "CrucibleOfBattleStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 29.0,
+          "y": 16.3,
+          "rotation": 47.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 27.1,
+          "y": 21.5,
+          "rotation": -47.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 20.0,
+          "y": 28.9,
+          "rotation": 55.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 9.0,
+          "y": 15.2,
+          "rotation": -121.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.3,
+          "y": 23.9,
+          "rotation": -35.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 28.7,
+          "y": 5.2,
+          "rotation": -11.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-1",
+      "label": "1",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "three_storey_blue",
+          "x": 19.0,
+          "y": 13.0,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 28.9,
+          "y": 17.0,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 26.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 7.0,
+          "y": 15.0,
+          "rotation": -130.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 26.0,
+          "y": 13.0,
+          "rotation": -130.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.8,
+          "y": 36.1,
+          "rotation": -50.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-2",
+      "label": "2",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 3.0,
+          "y": 23.0,
+          "rotation": -90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 5.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 15.0,
+          "y": 26.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 14.0,
+          "rotation": 50.5,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 39.0,
+          "y": 13.0,
+          "rotation": -130.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 22.5,
+          "y": 8.0,
+          "rotation": 130.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-3",
+      "label": "3",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 26.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 7.0,
+          "y": 15.0,
+          "rotation": -130.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.6,
+          "y": 36.1,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 26.3,
+          "y": 13.0,
+          "rotation": -131.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 28.9,
+          "y": 17.0,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.7,
+          "y": 22.1,
+          "rotation": -50.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-4-5",
+      "label": "4 - 5",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 39.0,
+          "y": 27.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 23.0,
+          "y": 31.0,
+          "rotation": -103.5,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 11.0,
+          "y": 13.0,
+          "rotation": 230.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 10.5,
+          "y": 31.0,
+          "rotation": 48.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.5,
+          "y": 24.5,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 24.0,
+          "y": 11.0,
+          "rotation": 195.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-6",
+      "label": "6",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 3.0,
+          "y": 23.0,
+          "rotation": -90.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 5.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 15.0,
+          "y": 26.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 28.6,
+          "y": 23.2,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 35.5,
+          "y": 13.4,
+          "rotation": -115.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 21.3,
+          "y": 7.9,
+          "rotation": 130.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-7",
+      "label": "7",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "two_storey_red",
+          "x": 29.5,
+          "y": 34.9,
+          "rotation": 130.0,
+          "flip": true
+        },
+        {
+          "type": "container",
+          "x": 28.7,
+          "y": 17.1,
+          "rotation": 50.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.5,
+          "y": 22.2,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 18.5,
+          "y": 28.0,
+          "rotation": 48.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 12.0,
+          "y": 2.6,
+          "rotation": 42.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.0,
+          "y": 25.0,
+          "rotation": -40.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-search-8",
+      "label": "8",
+      "deployment": "SearchAndDestroyStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 3.0,
+          "y": 23.0,
+          "rotation": -90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 6.0,
+          "y": 4.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 15.0,
+          "y": 26.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 27.0,
+          "y": 24.4,
+          "rotation": -60.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 37.0,
+          "y": 13.2,
+          "rotation": -120.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 21.9,
+          "y": 7.0,
+          "rotation": 120.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-1",
+      "label": "1",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 40.0,
+          "y": 6.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 8.0,
+          "y": 1.9,
+          "rotation": 60.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 15.2,
+          "y": 22.1,
+          "rotation": -31.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 15.0,
+          "y": 40.1,
+          "rotation": -70.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 29.0,
+          "y": 38.1,
+          "rotation": -32.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 28.5,
+          "y": 17.5,
+          "rotation": 115.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-2",
+      "label": "2",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 37.0,
+          "y": 2.0,
+          "rotation": 37.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 12.0,
+          "y": 24.0,
+          "rotation": -139.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 12.0,
+          "y": 0.0,
+          "rotation": 49.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 30.5,
+          "y": 2.7,
+          "rotation": 116.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.2,
+          "y": 31.6,
+          "rotation": 121.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 28.7,
+          "y": 29.2,
+          "rotation": -72.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-3",
+      "label": "3",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 29.0,
+          "y": 15.0,
+          "rotation": 63.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.5,
+          "y": 9.4,
+          "rotation": -50.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 15.2,
+          "y": 24.1,
+          "rotation": -59.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 28.0,
+          "y": 32.0,
+          "rotation": -60.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 27.7,
+          "y": 39.8,
+          "rotation": -46.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 18.4,
+          "y": 33.1,
+          "rotation": 133.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-4-5",
+      "label": "4 - 5",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 35.0,
+          "y": 19.2,
+          "rotation": 20.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.2,
+          "y": 9.0,
+          "rotation": 150.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 44.9,
+          "y": 5.8,
+          "rotation": 120.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 41.0,
+          "y": 18.8,
+          "rotation": 120.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 28.2,
+          "y": 5.2,
+          "rotation": 124.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 31.0,
+          "y": 5.0,
+          "rotation": 120.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-6",
+      "label": "6",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 25.5,
+          "y": 15.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 23.0,
+          "y": 10.24,
+          "rotation": -60.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 13.3,
+          "y": 13.0,
+          "rotation": 150.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 26.0,
+          "y": 5.2,
+          "rotation": 150.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 20.0,
+          "y": 22.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 12.9,
+          "y": 38.5,
+          "rotation": -56.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-7",
+      "label": "7",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 27.0,
+          "y": 22.0,
+          "rotation": -180.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 10.0,
+          "y": 4.5,
+          "rotation": 140.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 15.0,
+          "y": 14.0,
+          "rotation": 137.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 24.0,
+          "y": 4.5,
+          "rotation": 140.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 40.0,
+          "y": 10.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 13.5,
+          "y": 40.6,
+          "rotation": -66.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-tipping-8",
+      "label": "8",
+      "deployment": "TippingPointStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 24.0,
+          "y": 0.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 11.0,
+          "y": 14.0,
+          "rotation": -90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 27.0,
+          "y": 9.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 32.0,
+          "rotation": 90.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 46.8,
+          "y": 17.8,
+          "rotation": 120.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 27.2,
+          "y": 22.3,
+          "rotation": -33.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-dawn-1",
+      "label": "1",
+      "deployment": "DawnOfWarStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 6.0,
+          "y": 5.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 8.5,
+          "y": 5.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.0,
+          "y": 30.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.0,
+          "y": 21.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 10.0,
+          "y": 22.0,
+          "rotation": -138.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-dawn-2",
+      "label": "2",
+      "deployment": "DawnOfWarStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 6.0,
+          "y": 5.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 8.5,
+          "y": 5.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.0,
+          "y": 30.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 30.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.0,
+          "y": 21.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 10.0,
+          "y": 22.3,
+          "rotation": -138.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-dawn-3",
+      "label": "3",
+      "deployment": "DawnOfWarStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 6.0,
+          "y": 5.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 8.5,
+          "y": 5.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.0,
+          "y": 30.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.0,
+          "y": 21.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 1.0,
+          "y": 14.2,
+          "rotation": 137.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-dawn-4",
+      "label": "4 - BETA",
+      "deployment": "DawnOfWarStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 13.0,
+          "y": 12.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "prototype_ruin",
+          "x": 5.0,
+          "y": 19.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 42.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 23.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 16.9,
+          "rotation": 55.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.2,
+          "y": 7.1,
+          "rotation": 153.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-dawn-5",
+      "label": "5 - BETA",
+      "deployment": "DawnOfWarStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 13.0,
+          "y": 12.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "prototype_ruin",
+          "x": 5.0,
+          "y": 19.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 42.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 35.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 16.9,
+          "rotation": 55.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.2,
+          "y": 7.1,
+          "rotation": 153.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-dawn-6",
+      "label": "6 - BETA",
+      "deployment": "DawnOfWarStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 13.0,
+          "y": 12.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "prototype_ruin",
+          "x": 5.0,
+          "y": 19.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 42.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 23.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 21.0,
+          "y": 16.9,
+          "rotation": 55.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 5.5,
+          "y": 12.5,
+          "rotation": -153.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-sweeping-1",
+      "label": "1",
+      "deployment": "SweepingEngagementStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 20.0,
+          "y": 19.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 22.5,
+          "y": 19.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 43.0,
+          "y": 14.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 25.0,
+          "y": 36.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 42.0,
+          "y": 34.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 46.8,
+          "y": 20.0,
+          "rotation": 30.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-sweeping-2",
+      "label": "2",
+      "deployment": "SweepingEngagementStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 20.0,
+          "y": 19.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 22.5,
+          "y": 19.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 55.0,
+          "y": 14.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 25.0,
+          "y": 36.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 42.0,
+          "y": 34.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 46.8,
+          "y": 20.0,
+          "rotation": 30.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-sweeping-3",
+      "label": "3",
+      "deployment": "SweepingEngagementStrikeForce",
+      "placements": [
+        {
+          "type": "container",
+          "x": 6.0,
+          "y": 5.0,
+          "rotation": 0.0,
+          "flip": false
+        },
+        {
+          "type": "container",
+          "x": 8.5,
+          "y": 5.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 44.0,
+          "y": 14.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 18.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 43.0,
+          "y": 23.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 1.1,
+          "y": 14.5,
+          "rotation": 138.0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-sweeping-4",
+      "label": "4 - BETA",
+      "deployment": "SweepingEngagementStrikeForce",
+      "placements": [
+        {
+          "type": "prototype_ruin",
+          "x": 55.0,
+          "y": 19.0,
+          "rotation": 218.0,
+          "flip": true
+        },
+        {
+          "type": "container",
+          "x": 21.0,
+          "y": 14.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 17.0,
+          "y": 32.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 20.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 38.0,
+          "y": 26.2,
+          "rotation": -139.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.1,
+          "y": 7.9,
+          "rotation": 162.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-sweeping-5",
+      "label": "5 - BETA",
+      "deployment": "SweepingEngagementStrikeForce",
+      "placements": [
+        {
+          "type": "prototype_ruin",
+          "x": 55.0,
+          "y": 19.0,
+          "rotation": 218.0,
+          "flip": true
+        },
+        {
+          "type": "container",
+          "x": 21.0,
+          "y": 14.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 17.0,
+          "y": 32.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 32.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 38.0,
+          "y": 26.2,
+          "rotation": -139.0,
+          "flip": false
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 16.1,
+          "y": 7.9,
+          "rotation": 162.0,
+          "flip": false
+        }
+      ]
+    },
+    {
+      "id": "wtc-2025-map-sweeping-6",
+      "label": "6 - BETA",
+      "deployment": "SweepingEngagementStrikeForce",
+      "placements": [
+        {
+          "type": "prototype_ruin",
+          "x": 55.0,
+          "y": 19.0,
+          "rotation": 218.0,
+          "flip": true
+        },
+        {
+          "type": "container",
+          "x": 21.0,
+          "y": 14.0,
+          "rotation": 90.0,
+          "flip": true
+        },
+        {
+          "type": "three_storey_blue",
+          "x": 38.0,
+          "y": 26.2,
+          "rotation": -139.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 17.0,
+          "y": 32.0,
+          "rotation": 0.0,
+          "flip": true
+        },
+        {
+          "type": "two_storey_red",
+          "x": 16.1,
+          "y": 7.9,
+          "rotation": 162.0,
+          "flip": false
+        },
+        {
+          "type": "two_storey_red",
+          "x": 20.0,
+          "y": 12.0,
+          "rotation": 180.0,
+          "flip": true
+        }
+      ]
+    }
+  ]
+}
