@@ -3,6 +3,15 @@ import { canvas } from "./context.js";
 import { boardState } from "./state.js";
 import { getHitRadius } from "./utils.js";
 
+function rotateSelectedModels(step) {
+  getModels().forEach(m => {
+    if (!m.selected || m.base === null) return;
+    m.rotation = ((Number(m.rotation) || 0) + step) % 360;
+    if (m.rotation < 0) m.rotation += 360;
+  });
+}
+
+
 export function registerBoardEvents(onChange) {
   window.addEventListener("keydown", e => {
     if (e.key === "r" || e.key === "R") boardState.rulerActive = true;
@@ -22,6 +31,12 @@ export function registerBoardEvents(onChange) {
 
     if (e.key === "c" || e.key === "C") {
       getModels().forEach(m => (m.bubbles = []));
+      onChange();
+    }
+
+    if (e.key === "q" || e.key === "Q" || e.key === "e" || e.key === "E") {
+      const step = e.shiftKey ? 15 : 5;
+      rotateSelectedModels((e.key === "q" || e.key === "Q") ? -step : step);
       onChange();
     }
   });

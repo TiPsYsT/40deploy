@@ -196,6 +196,14 @@ function mapPieceType(type, flip) {
   return type;
 }
 
+function mirrorPieceType(type) {
+  if (type === "three_storey_blue") return "three_storey_blue_inv";
+  if (type === "three_storey_blue_inv") return "three_storey_blue";
+  if (type === "two_storey_red") return "two_storey_red_inv";
+  if (type === "two_storey_red_inv") return "two_storey_red";
+  return type;
+}
+
 function getLayoutNumber(id) {
   const match = id.match(/-(\d+)$/);
   return match ? Number(match[1]) : null;
@@ -278,8 +286,9 @@ export function buildWtcTerrain(pack, layoutId) {
 
   const mirroredPieces = basePieces.map(p => ({
     ...p,
+    type: mirrorPieceType(p.type),
     x: toMm(BOARD_WIDTH_IN) - p.x - p.w,
-    rotation: normalizeRotation(360 - p.rotation)
+    rotation: normalizeRotation(180 - p.rotation)
   }));
 
   return {
