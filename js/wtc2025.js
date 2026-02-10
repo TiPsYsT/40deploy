@@ -198,7 +198,7 @@ function mapPieceType(type, flip) {
 
 function getLayoutNumber(id) {
   const match = id.match(/-(\d+)$/);
-  return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+  return match ? Number(match[1]) : null;
 }
 
 function normalizeRotation(rotation) {
@@ -223,10 +223,18 @@ export function listWtc2025Deployments(pack) {
 export function listWtc2025LayoutsByDeployment(pack, deployment) {
   return pack.layouts
     .filter(l => l.deployment === deployment)
-    .sort((a, b) => getLayoutNumber(a.id) - getLayoutNumber(b.id))
+    .sort((a, b) => {
+      const aNum = getLayoutNumber(a.id);
+      const bNum = getLayoutNumber(b.id);
+
+      if (aNum === null && bNum === null) return a.id.localeCompare(b.id);
+      if (aNum === null) return 1;
+      if (bNum === null) return -1;
+      return aNum - bNum;
+    })
     .map(l => ({
       id: l.id,
-      number: String(getLayoutNumber(l.id))
+      number: String(getLayoutNumber(l.id) ?? l.id)
     }));
 }
 

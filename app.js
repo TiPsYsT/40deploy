@@ -7,6 +7,7 @@ import { loadWtc2025Pack, listWtc2025Deployments, listWtc2025LayoutsByDeployment
 
 const fileInput = document.getElementById("fileInput");
 const setupSelect = document.getElementById("setupSelect");
+setupSelect.disabled = true;
 const deploymentSelect = document.getElementById("deploymentSelect");
 const layoutNumberSelect = document.getElementById("layoutNumberSelect");
 
@@ -18,6 +19,7 @@ let wtc2025Pack = null;
   await loadBases();
   wtc2025Pack = await loadWtc2025Pack();
 
+  setupSelect.disabled = false;
   initBoard();
 })();
 
@@ -52,7 +54,7 @@ setupSelect.addEventListener("change", () => {
   deploymentSelect.disabled = !isWtc;
   layoutNumberSelect.disabled = true;
 
-  if (isWtc) {
+  if (isWtc && wtc2025Pack) {
     listWtc2025Deployments(wtc2025Pack).forEach(d => {
       const opt = document.createElement("option");
       opt.value = d.id;
@@ -74,7 +76,7 @@ deploymentSelect.addEventListener("change", () => {
   const deployment = deploymentSelect.value;
   layoutNumberSelect.disabled = !deployment;
 
-  if (deployment) {
+  if (deployment && wtc2025Pack) {
     listWtc2025LayoutsByDeployment(wtc2025Pack, deployment).forEach(l => {
       const opt = document.createElement("option");
       opt.value = l.id;
@@ -95,6 +97,8 @@ layoutNumberSelect.addEventListener("change", e => {
     initBoard(currentMission, currentTerrain);
     return;
   }
+
+  if (!wtc2025Pack) return;
 
   currentMission = buildWtcMission(wtc2025Pack, layoutId);
   currentTerrain = buildWtcTerrain(wtc2025Pack, layoutId);
