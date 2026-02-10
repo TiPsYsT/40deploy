@@ -16,11 +16,12 @@ export function hexToRgba(hex, alpha) {
 
 export function drawBase(ctx, model) {
   const base = model.base.toLowerCase();
+  const rotation = ((Number(model.rotation) || 0) * Math.PI) / 180;
   ctx.beginPath();
 
   if (base.includes("x")) {
     const [w, h] = base.split("x").map(Number);
-    ctx.ellipse(model.x, model.y, w / 2, h / 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(model.x, model.y, w / 2, h / 2, rotation, 0, Math.PI * 2);
   } else {
     ctx.arc(model.x, model.y, parseFloat(base) / 2, 0, Math.PI * 2);
   }
@@ -29,4 +30,18 @@ export function drawBase(ctx, model) {
   ctx.fill();
   ctx.strokeStyle = "black";
   ctx.stroke();
+
+  if (base.includes("x")) {
+    const [w] = base.split("x").map(Number);
+    const markerLength = Math.max(10, w / 4);
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#111";
+    ctx.moveTo(model.x, model.y);
+    ctx.lineTo(
+      model.x + Math.cos(rotation) * markerLength,
+      model.y + Math.sin(rotation) * markerLength
+    );
+    ctx.stroke();
+  }
 }

@@ -59,7 +59,8 @@ export function importNewRecruit(json) {
         name,
         base, // kan vara null
         x: null,
-        y: null
+        y: null,
+        rotation: 0
       });
     }
   }
