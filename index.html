@@ -10,20 +10,19 @@
   <div id="topbar">
     <input type="file" id="fileInput" />
 
-    <select id="missionSelect">
+    <select id="setupSelect">
+      <option value="">– setup –</option>
+      <option value="wtc">WTC</option>
+      <option value="utc">UTC</option>
+      <option value="gw">GW</option>
+    </select>
+
+    <select id="deploymentSelect" disabled>
       <option value="">– mission –</option>
-      <option value="dawn_of_war">Dawn of War</option>
-      <option value="wtc_2025_dawn_1">WTC 2025 Dawn of War 1</option>
     </select>
 
-    <select id="terrainSelect">
-      <option value="">– terräng –</option>
-      <option value="wtc_standard_1">WTC Terräng 1</option>
-      <option value="wtc_2025_dawn_1">WTC 2025 Dawn of War 1</option>
-    </select>
-
-    <select id="wtcLayoutSelect">
-      <option value="">– WTC 2025 layout –</option>
+    <select id="layoutNumberSelect" disabled>
+      <option value="">– layout –</option>
     </select>
 
     <button id="clearBubbles">Clear bubbles</button>
