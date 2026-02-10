@@ -3,14 +3,13 @@ import { importNewRecruit } from "./js/importer.js";
 import { renderSidebar } from "./js/sidebar.js";
 import { initBoard } from "./js/board.js";
 import { loadBases } from "./js/baseResolver.js";
-import { loadMission } from "./js/missionLoader.js";
-import { loadTerrain } from "./js/terrainLoader.js";
-import { loadWtc2025Pack, listWtc2025Layouts, buildWtcMission, buildWtcTerrain } from "./js/wtc2025.js";
+import { loadWtc2025Pack, listWtc2025Deployments, listWtc2025LayoutsByDeployment, buildWtcMission, buildWtcTerrain } from "./js/wtc2025.js";
 
 const fileInput = document.getElementById("fileInput");
-const missionSelect = document.getElementById("missionSelect");
-const terrainSelect = document.getElementById("terrainSelect");
-const wtcLayoutSelect = document.getElementById("wtcLayoutSelect");
+const setupSelect = document.getElementById("setupSelect");
+setupSelect.disabled = true;
+const deploymentSelect = document.getElementById("deploymentSelect");
+const layoutNumberSelect = document.getElementById("layoutNumberSelect");
 
 let currentMission = null;
 let currentTerrain = null;
@@ -20,13 +19,7 @@ let wtc2025Pack = null;
   await loadBases();
   wtc2025Pack = await loadWtc2025Pack();
 
-  listWtc2025Layouts(wtc2025Pack).forEach(l => {
-    const opt = document.createElement("option");
-    opt.value = l.id;
-    opt.textContent = l.label;
-    wtcLayoutSelect.appendChild(opt);
-  });
-
+  setupSelect.disabled = false;
   initBoard();
 })();
 
@@ -38,44 +31,74 @@ fileInput.addEventListener("change", e => {
     const json = JSON.parse(e.target.result);
     const models = importNewRecruit(json);
 
-    setModels(models);      // ✅ färger sätts här
-    renderSidebar();        // ✅ sidebar ser färger
+    setModels(models);
+    renderSidebar();
     initBoard(currentMission, currentTerrain);
   };
 
   reader.readAsText(file);
 });
 
-missionSelect.addEventListener("change", async e => {
-  wtcLayoutSelect.value = "";
+setupSelect.addEventListener("change", () => {
+  currentMission = null;
+  currentTerrain = null;
 
-  currentMission = e.target.value
-    ? await loadMission(e.target.value)
-    : null;
+  deploymentSelect.innerHTML = '<option value="">– mission –</option>';
+  layoutNumberSelect.innerHTML = '<option value="">– layout –</option>';
+  deploymentSelect.value = "";
+  layoutNumberSelect.value = "";
+
+  const setup = setupSelect.value;
+  const isWtc = setup === "wtc";
+
+  deploymentSelect.disabled = !isWtc;
+  layoutNumberSelect.disabled = true;
+
+  if (isWtc && wtc2025Pack) {
+    listWtc2025Deployments(wtc2025Pack).forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.id;
+      opt.textContent = d.label;
+      deploymentSelect.appendChild(opt);
+    });
+  }
 
   initBoard(currentMission, currentTerrain);
 });
 
-terrainSelect.addEventListener("change", async e => {
-  wtcLayoutSelect.value = "";
+deploymentSelect.addEventListener("change", () => {
+  currentMission = null;
+  currentTerrain = null;
 
-  currentTerrain = e.target.value
-    ? await loadTerrain(e.target.value)
-    : null;
+  layoutNumberSelect.innerHTML = '<option value="">– layout –</option>';
+  layoutNumberSelect.value = "";
+
+  const deployment = deploymentSelect.value;
+  layoutNumberSelect.disabled = !deployment;
+
+  if (deployment && wtc2025Pack) {
+    listWtc2025LayoutsByDeployment(wtc2025Pack, deployment).forEach(l => {
+      const opt = document.createElement("option");
+      opt.value = l.id;
+      opt.textContent = l.number;
+      layoutNumberSelect.appendChild(opt);
+    });
+  }
 
   initBoard(currentMission, currentTerrain);
 });
 
-
-wtcLayoutSelect.addEventListener("change", e => {
+layoutNumberSelect.addEventListener("change", e => {
   const layoutId = e.target.value;
 
   if (!layoutId) {
+    currentMission = null;
+    currentTerrain = null;
+    initBoard(currentMission, currentTerrain);
     return;
   }
 
-  missionSelect.value = "";
-  terrainSelect.value = "";
+  if (!wtc2025Pack) return;
 
   currentMission = buildWtcMission(wtc2025Pack, layoutId);
   currentTerrain = buildWtcTerrain(wtc2025Pack, layoutId);

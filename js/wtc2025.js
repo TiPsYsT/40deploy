@@ -1,4 +1,5 @@
 const INCH = 25.4;
+const BOARD_WIDTH_IN = 60;
 
 const TERRAIN_DEFS = {
   three_storey_blue: {
@@ -51,8 +52,21 @@ const TERRAIN_DEFS = {
   }
 };
 
+const DEPLOYMENT_LABELS = {
+  CrucibleOfBattleStrikeForce: "Crucible of Battle",
+  SearchAndDestroyStrikeForce: "Search and Destroy",
+  DawnOfWarStrikeForce: "Dawn of War",
+  HammerAndAnvilStrikeForce: "Hammer and Anvil",
+  SweepingEngagementStrikeForce: "Sweeping Engagement",
+  TippingPointStrikeForce: "Tipping Point"
+};
+
 function toMm(v) {
   return Math.round(v * INCH * 1000) / 1000;
+}
+
+function toRad(v) {
+  return (v * Math.PI) / 180;
 }
 
 function tokenizePath(path) {
@@ -61,6 +75,76 @@ function tokenizePath(path) {
     .trim()
     .split(/\s+/)
     .filter(Boolean);
+}
+
+function approxArcPoints(x1, y1, rxInput, ryInput, xAxisRotation, largeArcFlag, sweepFlag, x2, y2) {
+  let rx = Math.abs(rxInput);
+  let ry = Math.abs(ryInput);
+
+  if (!rx || !ry) {
+    return [[x2, y2]];
+  }
+
+  const phi = toRad(xAxisRotation % 360);
+  const sinPhi = Math.sin(phi);
+  const cosPhi = Math.cos(phi);
+
+  const dx = (x1 - x2) / 2;
+  const dy = (y1 - y2) / 2;
+
+  const x1p = cosPhi * dx + sinPhi * dy;
+  const y1p = -sinPhi * dx + cosPhi * dy;
+
+  const lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
+  if (lambda > 1) {
+    const scale = Math.sqrt(lambda);
+    rx *= scale;
+    ry *= scale;
+  }
+
+  const sign = largeArcFlag === sweepFlag ? -1 : 1;
+  const num = rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p;
+  const den = rx * rx * y1p * y1p + ry * ry * x1p * x1p;
+  const coef = sign * Math.sqrt(Math.max(0, num / den));
+
+  const cxp = coef * ((rx * y1p) / ry);
+  const cyp = coef * (-(ry * x1p) / rx);
+
+  const cx = cosPhi * cxp - sinPhi * cyp + (x1 + x2) / 2;
+  const cy = sinPhi * cxp + cosPhi * cyp + (y1 + y2) / 2;
+
+  function vectorAngle(ux, uy, vx, vy) {
+    const dot = ux * vx + uy * vy;
+    const len = Math.hypot(ux, uy) * Math.hypot(vx, vy);
+    const ang = Math.acos(Math.max(-1, Math.min(1, dot / len)));
+    return (ux * vy - uy * vx) < 0 ? -ang : ang;
+  }
+
+  const v1x = (x1p - cxp) / rx;
+  const v1y = (y1p - cyp) / ry;
+  const v2x = (-x1p - cxp) / rx;
+  const v2y = (-y1p - cyp) / ry;
+
+  let theta1 = vectorAngle(1, 0, v1x, v1y);
+  let delta = vectorAngle(v1x, v1y, v2x, v2y);
+
+  if (!sweepFlag && delta > 0) delta -= 2 * Math.PI;
+  if (sweepFlag && delta < 0) delta += 2 * Math.PI;
+
+  const segments = Math.max(8, Math.ceil(Math.abs(delta) / (Math.PI / 12)));
+  const points = [];
+
+  for (let i = 1; i <= segments; i++) {
+    const t = theta1 + (delta * i) / segments;
+    const cosT = Math.cos(t);
+    const sinT = Math.sin(t);
+
+    const x = cx + cosPhi * rx * cosT - sinPhi * ry * sinT;
+    const y = cy + sinPhi * rx * cosT + cosPhi * ry * sinT;
+    points.push([x, y]);
+  }
+
+  return points;
 }
 
 function parsePathToPoly(path) {
@@ -88,16 +172,18 @@ function parsePathToPoly(path) {
     }
 
     if (cmd === "A") {
-      // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
-      i += 5;
+      const rx = Number(tokens[i++]);
+      const ry = Number(tokens[i++]);
+      const rot = Number(tokens[i++]);
+      const largeArc = Number(tokens[i++]);
+      const sweep = Number(tokens[i++]);
       const nx = Number(tokens[i++]);
       const ny = Number(tokens[i++]);
-      // Approximation: use arc end point so shape remains valid for fill.
-      push(nx, ny);
+
+      approxArcPoints(x, y, rx, ry, rot, largeArc, sweep, nx, ny).forEach(([ax, ay]) => push(ax, ay));
       continue;
     }
 
-    // Unknown token: stop hard to avoid bad geometry.
     break;
   }
 
@@ -110,14 +196,46 @@ function mapPieceType(type, flip) {
   return type;
 }
 
+function getLayoutNumber(id) {
+  const match = id.match(/-(\d+)$/);
+  return match ? Number(match[1]) : null;
+}
+
+function normalizeRotation(rotation) {
+  const r = Number(rotation) || 0;
+  return ((r % 360) + 360) % 360;
+}
+
 export async function loadWtc2025Pack() {
   const res = await fetch("data/wtc_2025_translated.json");
   if (!res.ok) throw new Error("Could not load WTC 2025 translated data");
   return res.json();
 }
 
-export function listWtc2025Layouts(pack) {
-  return pack.layouts.map(l => ({ id: l.id, label: `${l.id} (${l.deployment})` }));
+export function listWtc2025Deployments(pack) {
+  const present = new Set(pack.layouts.map(l => l.deployment));
+
+  return Object.keys(DEPLOYMENT_LABELS)
+    .filter(id => present.has(id))
+    .map(id => ({ id, label: DEPLOYMENT_LABELS[id] }));
+}
+
+export function listWtc2025LayoutsByDeployment(pack, deployment) {
+  return pack.layouts
+    .filter(l => l.deployment === deployment)
+    .sort((a, b) => {
+      const aNum = getLayoutNumber(a.id);
+      const bNum = getLayoutNumber(b.id);
+
+      if (aNum === null && bNum === null) return a.id.localeCompare(b.id);
+      if (aNum === null) return 1;
+      if (bNum === null) return -1;
+      return aNum - bNum;
+    })
+    .map(l => ({
+      id: l.id,
+      number: String(getLayoutNumber(l.id) ?? l.id)
+    }));
 }
 
 export function buildWtcMission(pack, layoutId) {
@@ -141,22 +259,30 @@ export function buildWtcTerrain(pack, layoutId) {
   const layout = pack.layouts.find(l => l.id === layoutId);
   if (!layout) return null;
 
-  return {
-    pieces: layout.placements.map(p => {
-      const resolvedType = mapPieceType(p.type, p.flip);
-      const def = TERRAIN_DEFS[resolvedType];
-      if (!def) throw new Error(`Unknown terrain type: ${resolvedType}`);
+  const basePieces = layout.placements.map(p => {
+    const resolvedType = mapPieceType(p.type, p.flip);
+    const def = TERRAIN_DEFS[resolvedType];
+    if (!def) throw new Error(`Unknown terrain type: ${resolvedType}`);
 
-      return {
-        type: resolvedType,
-        color: def.color,
-        x: toMm(p.x),
-        y: toMm(p.y),
-        w: def.w,
-        h: def.h,
-        rotation: p.rotation,
-        walls: def.walls
-      };
-    })
+    return {
+      type: resolvedType,
+      color: def.color,
+      x: toMm(p.x),
+      y: toMm(p.y),
+      w: def.w,
+      h: def.h,
+      rotation: normalizeRotation(p.rotation),
+      walls: def.walls
+    };
+  });
+
+  const mirroredPieces = basePieces.map(p => ({
+    ...p,
+    x: toMm(BOARD_WIDTH_IN) - p.x - p.w,
+    rotation: normalizeRotation(360 - p.rotation)
+  }));
+
+  return {
+    pieces: [...basePieces, ...mirroredPieces]
   };
 }
